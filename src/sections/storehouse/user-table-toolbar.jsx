@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -7,7 +7,6 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from '@mui/material/Tooltip';
 import Iconify from 'src/components/iconify';
-import { format } from 'date-fns'; // Импортируем функцию форматирования даты из date-fns
 import { Button } from '@mui/material';
 
 export default function UserTableToolbar({
@@ -18,6 +17,8 @@ export default function UserTableToolbar({
   endDate,
   onStartDateChange,
   onEndDateChange,
+  currentTab, // new prop to indicate the current tab
+  handleMoveToSortingWarehouse, // function to handle moving to sorting warehouse
 }) {
   // Функции для управления изменениями дат
   const handleStartDateChange = (event) => {
@@ -81,6 +82,12 @@ export default function UserTableToolbar({
         />
       </div>
 
+      {currentTab === 'В производстве' && ( // Render the button conditionally based on current tab
+        <Button variant="contained" onClick={handleMoveToSortingWarehouse}>
+          На склад Сортировки
+        </Button>
+      )}
+
       {numSelected > 0 ? (
         <Tooltip title="Delete">
           <IconButton>
@@ -94,10 +101,6 @@ export default function UserTableToolbar({
           </IconButton>
         </Tooltip>
       )}
-
-      <Button variant="contained" color="warning">
-        В работу             
-      </Button>
     </Toolbar>
   );
 }
@@ -110,4 +113,6 @@ UserTableToolbar.propTypes = {
   endDate: PropTypes.instanceOf(Date),
   onStartDateChange: PropTypes.func,
   onEndDateChange: PropTypes.func,
+  currentTab: PropTypes.string.isRequired, // PropType for current tab
+  handleMoveToSortingWarehouse: PropTypes.func.isRequired, // PropType for handling move to sorting warehouse
 };

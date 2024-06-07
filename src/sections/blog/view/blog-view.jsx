@@ -1,4 +1,3 @@
-// StorehouseView.js
 import { useState } from 'react';
 import {
   Card,
@@ -17,7 +16,6 @@ import {
   TextField,
   Input,
 } from '@mui/material';
-import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 import { MdDeleteOutline } from 'react-icons/md';
 import { data } from './data';
 import UserTableToolbar from '../user-table-toolbar';
@@ -32,12 +30,10 @@ export default function BlogView() {
   const [selected, setSelected] = useState([]);
   const [filterName, setFilterName] = useState('');
 
-
   const handleFilterByName = (event) => {
     setPage(0);
     setFilterName(event.target.value);
   };
-
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -79,7 +75,6 @@ export default function BlogView() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Склад</Typography>
         <Stack direction="row" alignItems="center" className="gap-3">
-       
           <Button variant="contained" color="inherit">Добавить Фирму</Button>
         </Stack>
       </Stack>
@@ -93,7 +88,7 @@ export default function BlogView() {
       </Card>
 
       <Card>
-      <UserTableToolbar
+        <UserTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
@@ -112,13 +107,24 @@ export default function BlogView() {
                   </>
                 ) : (
                   <>
-                    <TableCell>Wildberries</TableCell>
-                    <TableCell>Ozon</TableCell>
-                    <TableCell>Yandex Market</TableCell>
-                    <TableCell>Действия</TableCell>
+                    <TableCell colSpan={1}>Wildberries</TableCell>
+                    <TableCell colSpan={2}>Ozon</TableCell>
+                    <TableCell colSpan={4}>Yandex Market</TableCell>
                   </>
                 )}
               </TableRow>
+              {currentTab !== 'Склад сортировки' && (
+                <TableRow>
+                  <TableCell />
+                  <TableCell>wb_api_key</TableCell>
+                  <TableCell>api_token</TableCell>
+                  <TableCell>client_id</TableCell>
+                  <TableCell>api_key(bearer)</TableCell>
+                  <TableCell>fby_campaign_id</TableCell>
+                  <TableCell>fbs_campaign_id</TableCell>
+                  <TableCell>business_id</TableCell>
+                </TableRow>
+              )}
             </TableHead>
             <TableBody>
               {displayedData.map((row) => (
@@ -146,12 +152,10 @@ export default function BlogView() {
                       <TableCell><Input type="text" /></TableCell>
                       <TableCell><Input type="text" /></TableCell>
                       <TableCell><Input type="text" /></TableCell>
-                      <TableCell>
-<Input type="text" />
-                        <IconButton onClick={() => handleDeleteRow(row.id)}>
-                          <MdDeleteOutline />
-                        </IconButton>
-                      </TableCell>
+                      <TableCell><Input type="text" /></TableCell>
+                      <TableCell><Input type="text" /></TableCell>
+                      <TableCell><Input type="text" /></TableCell>
+                      <TableCell><Input type="text" /></TableCell>
                     </>
                   )}
                 </TableRow>

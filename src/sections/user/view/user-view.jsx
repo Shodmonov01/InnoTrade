@@ -26,15 +26,10 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 export default function UserPage() {
   const [page, setPage] = useState(0);
-
   const [order, setOrder] = useState('asc');
-
   const [selected, setSelected] = useState([]);
-
   const [orderBy, setOrderBy] = useState('name');
-
   const [filterName, setFilterName] = useState('');
-
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleSort = (event, id) => {
@@ -104,8 +99,6 @@ export default function UserPage() {
         </Button>
       </Stack>
 
-
-
       <Card>
         <UserTableToolbar
           numSelected={selected.length}
@@ -124,11 +117,12 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'name', label: 'Имя' },
+                  { id: 'company', label: 'Компания' },
+                  { id: 'role', label: 'Роль' },
+                  { id: 'isVerified', label: 'Подтвержден', align: 'center' },
+                  { id: 'status', label: 'Статус' },
+                  { id: 'chat_id', label: 'Chat ID' }, // добавляем chat_id
                   { id: '' },
                 ]}
               />
@@ -144,6 +138,7 @@ export default function UserPage() {
                       company={row.company}
                       avatarUrl={row.avatarUrl}
                       isVerified={row.isVerified}
+                      chatId={row.chat_id} // добавляем chat_id
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />

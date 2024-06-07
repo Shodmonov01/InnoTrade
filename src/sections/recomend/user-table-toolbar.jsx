@@ -67,7 +67,7 @@ export default function UserTableToolbar({
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: '8px' }} className="border rounded-lg p-3.5">
+      {/* <div style={{ display: 'flex', gap: '8px' }} className="border rounded-lg p-3.5">
         <input
           type="date"
           // value={format(startDate, 'yyyy-MM-dd')}
@@ -79,25 +79,26 @@ export default function UserTableToolbar({
           // value={format(endDate, 'yyyy-MM-dd')}
           onChange={handleEndDateChange}
         />
+      </div> */}
+
+      <div>
+        {numSelected > 0 ? (
+          <Tooltip title="Delete">
+            <IconButton>
+              <Iconify icon="eva:trash-2-fill" />
+            </IconButton>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Filter list">
+            <IconButton>
+              <Iconify icon="ic:round-filter-list" />
+            </IconButton>
+          </Tooltip>
+        )}
+        <Button variant="contained" color="warning">
+          В работу
+        </Button>
       </div>
-
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton>
-            <Iconify icon="eva:trash-2-fill" />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <Iconify icon="ic:round-filter-list" />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      <Button variant="contained" color="warning">
-        В работу             
-      </Button>
     </Toolbar>
   );
 }

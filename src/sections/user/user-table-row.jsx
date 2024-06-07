@@ -24,6 +24,7 @@ export default function UserTableRow({
   role,
   isVerified,
   status,
+  chatId,
   handleClick,
 }) {
   const [open, setOpen] = useState(null);
@@ -53,15 +54,12 @@ export default function UserTableRow({
         </TableCell>
 
         <TableCell>{company}</TableCell>
-
         <TableCell>{role}</TableCell>
-
-        <TableCell align="center">{isVerified ? 'Yes' : 'No'}</TableCell>
-
+        <TableCell align="center">{isVerified ? 'Да' : 'Нет'}</TableCell>
         <TableCell>
           <Label color={(status === 'banned' && 'error') || 'success'}>{status}</Label>
         </TableCell>
-
+        <TableCell>{chatId}</TableCell> {/* добавляем chat_id */}
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -81,12 +79,11 @@ export default function UserTableRow({
       >
         <MenuItem onClick={handleCloseMenu}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
-          Edit
+          Редактировать
         </MenuItem>
-
         <MenuItem onClick={handleCloseMenu} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
-          Delete
+          Удалить
         </MenuItem>
       </Popover>
     </>
@@ -102,4 +99,5 @@ UserTableRow.propTypes = {
   role: PropTypes.any,
   selected: PropTypes.any,
   status: PropTypes.string,
+  chatId: PropTypes.string, // добавляем chatId в PropTypes
 };
