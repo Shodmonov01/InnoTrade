@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Card,
   Stack,
@@ -15,9 +15,13 @@ import {
 } from '@mui/material';
 import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 import UserTableToolbar from '../user-table-toolbar';
-import { data } from './data';
+import { axiosInstance } from 'src/api/api';
 
-
+// Добавьте токен в заголовки axiosInstance
+const token = localStorage.getItem('token');
+if (token) {
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
 
 const tabs = ['общие', 'продажи ВБ', 'продажи ОЗОН', 'продажи ЯНДЕКС'];
 
@@ -27,8 +31,28 @@ export default function ProductsView() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [selected, setSelected] = useState([]);
   const [filterName, setFilterName] = useState('');
+  const [roles, setRoles] = useState({}); // Обновите состояние для хранения данных
 
-  
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const token = JSON.parse(localStorage.getItem('token')).access;
+        const response = await axiosInstance.get('/companies/5daa4b59-4cad-47ab-95b6-c02287f2f099/sales/?page=5&page_size=20', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        console.log(response);
+        console.log('Fetched roles:', response.data);
+        setRoles(response.data.data); // Устанавливаем только нужные данные
+      } catch (error) {
+        console.error('Failed to fetch roles', error);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
   const handleFilterByName = (event) => {
     setPage(0);
     setFilterName(event.target.value);
@@ -47,7 +71,12 @@ export default function ProductsView() {
     setCurrentTab(tab);
   };
 
-  const currentData = data[currentTab];
+  // Преобразуем данные для текущей вкладки
+  const currentData = Object.entries(roles).map(([key, value]) => ({
+    id: key,
+    ...value,
+  })) || [];
+
   const displayedData = currentData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
@@ -69,7 +98,7 @@ export default function ProductsView() {
       </Card>
 
       <Card>
-      <UserTableToolbar
+        <UserTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
@@ -93,21 +122,20 @@ export default function ProductsView() {
               {displayedData.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell>{row.id}</TableCell>
-                  <TableCell>{row['28.03.2024']}</TableCell>
-                  <TableCell>{row['27.03.2024']}</TableCell>
-                  <TableCell>{row['26.03.2024']}</TableCell>
-                  <TableCell>{row['25.03.2024']}</TableCell>
-                  <TableCell>{row['24.03.2024']}</TableCell>
-                  <TableCell>{row['23.03.2024']}</TableCell>
-                  <TableCell>{row['22.03.2024']}</TableCell>
-                  <TableCell>{row['21.03.2024']}</TableCell>
+                  <TableCell>{row['2024-08-06'] || 0}</TableCell>
+                  <TableCell>{row['2024-08-07'] || 0}</TableCell>
+                  <TableCell>{row['2024-08-08'] || 0}</TableCell>
+                  <TableCell>{row['2024-08-09'] || 0}</TableCell>
+                  <TableCell>{row['2024-08-10'] || 0}</TableCell>
+                  <TableCell>{row['2024-08-11'] || 0}</TableCell>
+                  <TableCell>{row['2024-08-12'] || 0}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 50, 100]}
           component="div"
           count={currentData.length}
           rowsPerPage={rowsPerPage}
