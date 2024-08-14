@@ -16,6 +16,8 @@ import {
 import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 import UserTableToolbar from '../user-table-toolbar';
 import { axiosInstance } from 'src/api/api';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 // Добавьте токен в заголовки axiosInstance
 const token = localStorage.getItem('token');
@@ -33,47 +35,42 @@ export default function ProductsView() {
   const [filterName, setFilterName] = useState('');
   const [roles, setRoles] = useState({});
   const [pageSize, setPageSize] = useState(500);
+  const [dates, setDates] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
-    // Функция для чтения параметров из URL
-    const readUrlParams = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const pageParam = parseInt(urlParams.get('page'), 10);
-      const rowsPerPageParam = parseInt(urlParams.get('rowsPerPage'), 10);
-
-      if (!isNaN(pageParam)) setPage(pageParam);
-      if (!isNaN(rowsPerPageParam)) setRowsPerPage(rowsPerPageParam);
-    };
-
-    // Чтение параметров при монтировании компонента
-    readUrlParams();
-
     const fetchRoles = async () => {
       try {
         const token = JSON.parse(localStorage.getItem('token')).access;
-        const response = await axiosInstance.get(`/companies/5daa4b59-4cad-47ab-95b6-c02287f2f099/sales/?page_size=${pageSize}`, {
+        let url = `/companies/5daa4b59-4cad-47ab-95b6-c02287f2f099/sales/?page_size=${pageSize}`;
+
+        if (startDate && endDate) {
+          url += `&date_from=${format(startDate, 'yyyy-MM-dd')}&date_to=${format(endDate, 'yyyy-MM-dd')}`;
+        }
+
+        const response = await axiosInstance.get(url, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
 
-        console.log(response);
-        console.log('Fetched roles:', response.data);
-
         const newPageSize = response.data.product_count || 500;
         setPageSize(newPageSize);
-
         setRoles(response.data.data);
+
+        // Extract dates
+        const allDates = Object.values(response.data.data).flatMap(item => Object.keys(item)).filter(key => key !== 'id');
+        setDates(Array.from(new Set(allDates)).sort((a, b) => new Date(b) - new Date(a)));
       } catch (error) {
         console.error('Failed to fetch roles', error);
       }
     };
 
     fetchRoles();
-  }, [pageSize]);
+  }, [pageSize, startDate, endDate]);
 
   useEffect(() => {
-    // Обновление URL при изменении состояния пагинации
     const updateUrlParams = () => {
       const urlParams = new URLSearchParams(window.location.search);
       urlParams.set('page', page);
@@ -102,6 +99,23 @@ export default function ProductsView() {
     setCurrentTab(tab);
   };
 
+  const handleExportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sales Data');
+
+    // Add header row
+    worksheet.addRow(['Артикул', ...dates]);
+
+    // Add data rows
+    currentData.forEach(row => {
+      worksheet.addRow([row.id, ...dates.map(date => row[date] || 0)]);
+    });
+
+    // Write to file
+    const buffer = await workbook.xlsx.writeBuffer();
+    saveAs(new Blob([buffer]), 'sales_data.xlsx');
+  };
+
   const currentData = Object.entries(roles).map(([key, value]) => ({
     id: key,
     ...value,
@@ -109,14 +123,12 @@ export default function ProductsView() {
 
   const displayedData = currentData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
-  console.log(displayedData);
-
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Продажи</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<PiMicrosoftExcelLogo />}>
+        <Button variant="contained" color="inherit" startIcon={<PiMicrosoftExcelLogo />} onClick={handleExportToExcel}>
           Экспорт в EXCEL
         </Button>
       </Stack>
@@ -133,34 +145,29 @@ export default function ProductsView() {
         <UserTableToolbar
           numSelected={selected.length}
           filterName={filterName}
-          onFilterName={handleFilterByName}
+                    onFilterName={handleFilterByName}
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
         />
         <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Артикул</TableCell>
-                <TableCell>28.03.2024</TableCell>
-                <TableCell>27.03.2024</TableCell>
-                <TableCell>26.03.2024</TableCell>
-                <TableCell>25.03.2024</TableCell>
-                <TableCell>24.03.2024</TableCell>
-                <TableCell>23.03.2024</TableCell>
-                <TableCell>22.03.2024</TableCell>
-                <TableCell>21.03.2024</TableCell>
+                {dates.map((date) => (
+                  <TableCell key={date}>{date}</TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {displayedData.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell>{row.id}</TableCell>
-                  <TableCell>{row['2024-08-06'] || 0}</TableCell>
-                  <TableCell>{row['2024-08-07'] || 0}</TableCell>
-                  <TableCell>{row['2024-08-08'] || 0}</TableCell>
-                  <TableCell>{row['2024-08-09'] || 0}</TableCell>
-                  <TableCell>{row['2024-08-10'] || 0}</TableCell>
-                  <TableCell>{row['2024-08-11'] || 0}</TableCell>
-                  <TableCell>{row['2024-08-12'] || 0}</TableCell>
+                  {dates.map((date) => (
+                    <TableCell key={date}>{row[date] || 0}</TableCell>
+                  ))}
                 </TableRow>
               ))}
             </TableBody>
@@ -179,3 +186,4 @@ export default function ProductsView() {
     </Container>
   );
 }
+

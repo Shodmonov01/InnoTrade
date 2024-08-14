@@ -62,24 +62,23 @@ export default function UserTableToolbar({
                 </InputAdornment>
               }
             />
-
           </>
         )}
       </div>
 
-      <div style={{ display: 'flex', gap: '8px' }} className='border rounded-lg p-3.5'>
-              <input
-                type="date"
-                // value={format(startDate, 'yyyy-MM-dd')}
-                onChange={handleStartDateChange}
-              />
-              <span>—</span>
-              <input
-                type="date"
-                // value={format(endDate, 'yyyy-MM-dd')}
-                onChange={handleEndDateChange}
-              />
-            </div>
+      <div style={{ display: 'flex', gap: '8px' }} className="border rounded-lg p-3.5">
+        <input
+          type="date"
+          // value={format(startDate, 'yyyy-MM-dd')}
+          onChange={handleStartDateChange}
+        />
+        <span>—</span>
+        <input
+          type="date"
+          // value={format(endDate, 'yyyy-MM-dd')}
+          onChange={handleEndDateChange}
+        />
+      </div>
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
