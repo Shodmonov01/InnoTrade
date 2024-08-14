@@ -28,30 +28,61 @@ const tabs = ['общие', 'продажи ВБ', 'продажи ОЗОН', '�
 export default function ProductsView() {
   const [currentTab, setCurrentTab] = useState('общие');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selected, setSelected] = useState([]);
   const [filterName, setFilterName] = useState('');
-  const [roles, setRoles] = useState({}); // Обновите состояние для хранения данных
+  const [roles, setRoles] = useState({});
+  const [pageSize, setPageSize] = useState(500);
 
   useEffect(() => {
+    // Функция для чтения параметров из URL
+    const readUrlParams = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const pageParam = parseInt(urlParams.get('page'), 10);
+      const rowsPerPageParam = parseInt(urlParams.get('rowsPerPage'), 10);
+
+      if (!isNaN(pageParam)) setPage(pageParam);
+      if (!isNaN(rowsPerPageParam)) setRowsPerPage(rowsPerPageParam);
+    };
+
+    // Чтение параметров при монтировании компонента
+    readUrlParams();
+
     const fetchRoles = async () => {
       try {
         const token = JSON.parse(localStorage.getItem('token')).access;
-        const response = await axiosInstance.get('/companies/5daa4b59-4cad-47ab-95b6-c02287f2f099/sales/?page=5&page_size=20', {
+        const response = await axiosInstance.get(`/companies/5daa4b59-4cad-47ab-95b6-c02287f2f099/sales/?page_size=${pageSize}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
+
         console.log(response);
         console.log('Fetched roles:', response.data);
-        setRoles(response.data.data); // Устанавливаем только нужные данные
+
+        const newPageSize = response.data.product_count || 500;
+        setPageSize(newPageSize);
+
+        setRoles(response.data.data);
       } catch (error) {
         console.error('Failed to fetch roles', error);
       }
     };
 
     fetchRoles();
-  }, []);
+  }, [pageSize]);
+
+  useEffect(() => {
+    // Обновление URL при изменении состояния пагинации
+    const updateUrlParams = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('page', page);
+      urlParams.set('rowsPerPage', rowsPerPage);
+      window.history.replaceState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+    };
+
+    updateUrlParams();
+  }, [page, rowsPerPage]);
 
   const handleFilterByName = (event) => {
     setPage(0);
@@ -71,13 +102,14 @@ export default function ProductsView() {
     setCurrentTab(tab);
   };
 
-  // Преобразуем данные для текущей вкладки
   const currentData = Object.entries(roles).map(([key, value]) => ({
     id: key,
     ...value,
   })) || [];
 
   const displayedData = currentData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
+  console.log(displayedData);
 
   return (
     <Container>
@@ -135,7 +167,7 @@ export default function ProductsView() {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 50, 100]}
+          rowsPerPageOptions={[10, 20, 50, 100]}
           component="div"
           count={currentData.length}
           rowsPerPage={rowsPerPage}
