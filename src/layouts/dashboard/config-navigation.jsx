@@ -1,7 +1,7 @@
 import SvgColor from 'src/components/svg-color';
 import { AiOutlineReconciliation } from "react-icons/ai";
 import { MdOutlineStore, MdPointOfSale } from "react-icons/md";
-import { TbShoppingCartQuestion, TbShoppingCartShare } from "react-icons/tb";
+import { TbShoppingCartQuestion, TbShoppingCartShare, TbShoppingCartDown } from "react-icons/tb";
 import { PiUsersThree } from "react-icons/pi";
 import { LiaCopyrightSolid } from "react-icons/lia";
 import { IoIosLogOut } from "react-icons/io";
@@ -20,6 +20,12 @@ const navConfig = [
     title: 'Продажи',
     path: '/products',
     icon: <MdPointOfSale  size={25}/>,
+  },
+  {
+    title: 'Заказы',
+    path: '/order',
+    icon: <TbShoppingCartDown size={25}/>
+    ,
   },
   {
     title: 'Остатки',

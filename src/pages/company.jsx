@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { axiosInstance } from 'src/api/api'; // Use axiosInstance for fetching companies
+import { axiosInstance } from 'src/api/api';
 
 function Company() {
   const [companies, setCompanies] = useState([]);
@@ -26,9 +26,9 @@ function Company() {
   }, []);
 
   const handleCompanySelect = (company) => {
-    // Store the entire company object in localStorage
-    localStorage.setItem('selectedCompany', JSON.stringify(company));
-    navigate('/'); // Navigate to the default page or dashboard
+    // Сохраняем ID выбранной компании в localStorage
+    localStorage.setItem('selectedCompany', company.id);
+    navigate('/'); // Перенаправляем на главную страницу или панель управления
   };
 
   return (
