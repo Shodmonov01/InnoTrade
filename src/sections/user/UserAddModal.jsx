@@ -45,7 +45,6 @@ const UserAddModal = ({ open, onClose }) => {
     }
   }, [open]);
 
-
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({
