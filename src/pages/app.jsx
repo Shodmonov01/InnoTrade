@@ -8,7 +8,7 @@ export default function AppPage() {
   return (
     <>
       <Helmet>
-        <title> Главгая страница </title>
+        <title> Главная страница </title>
       </Helmet>
 
       <AppView />
