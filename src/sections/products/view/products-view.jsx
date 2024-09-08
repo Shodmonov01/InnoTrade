@@ -33,7 +33,7 @@ const tabs = [
 export default function ProductsView() {
   const [currentTab, setCurrentTab] = useState('Общие');
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(100); // Изменил значение по умолчанию
+  const [rowsPerPage, setRowsPerPage] = useState(100);
   const [selected, setSelected] = useState([]);
   const [filterName, setFilterName] = useState('');
   const [roles, setRoles] = useState({});
@@ -42,44 +42,42 @@ export default function ProductsView() {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isExporting, setIsExporting] = useState(false); // Добавлено состояние для загрузки при экспорте
-  const [sort, setSort] = useState(''); // Новое состояние для сортировки
-  const [totalProducts, setTotalProducts] = useState(0); // Общее количество продуктов
+  const [isExporting, setIsExporting] = useState(false);
+  const [sort, setSort] = useState('');
+  const [totalProducts, setTotalProducts] = useState(0);
   
-  const fetchRoles = async (applyFilters = false) => {
+  const fetchRoles = async () => {
     setIsLoading(true); // Начало загрузки
     try {
       const token = JSON.parse(localStorage.getItem('token')).access;
       const idCompany = localStorage.getItem('selectedCompany'); // Получаем ID компании из localStorage
       const selectedTab = tabs.find((tab) => tab.label === currentTab);
       const serviceParam = selectedTab?.service ? `&service=${selectedTab.service}` : '';
-  
+
       let url = `/companies/${idCompany}/sales/?page_size=${rowsPerPage}&page=${page + 1}${serviceParam}`;
-  
-      if (applyFilters) {
-        if (startDate && endDate) {
-          const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
-          const formattedEndDate = format(new Date(endDate), 'yyyy-MM-dd');
-          url += `&date_from=${formattedStartDate}&date_to=${formattedEndDate}`;
-        }
-        if (filterName) {
-          url += `&article=${filterName}`;
-        }
-        if (sort) {
-          url += `&sort=${sort}`;
-        }
+
+      if (startDate && endDate) {
+        const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
+        const formattedEndDate = format(new Date(endDate), 'yyyy-MM-dd');
+        url += `&date_from=${formattedStartDate}&date_to=${formattedEndDate}`;
       }
-  
+      if (filterName) {
+        url += `&article=${filterName}`;
+      }
+      if (sort) {
+        url += `&sort=${sort}`;
+      }
+
       const response = await axiosInstance.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       setPageSize(response.data.product_count || 500);
       setTotalProducts(response.data.product_count || 0); // Обновляем общее количество продуктов
       setRoles(response.data.data);
-  
+
       const allDates = Object.values(response.data.data)
         .flatMap((item) => Object.keys(item))
         .filter((key) => key !== 'id');
@@ -93,7 +91,7 @@ export default function ProductsView() {
   
   useEffect(() => {
     fetchRoles();
-  }, [currentTab, page, rowsPerPage]);
+  }, [currentTab, page, rowsPerPage, startDate, endDate, filterName, sort]);
 
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
@@ -114,10 +112,9 @@ export default function ProductsView() {
   };
 
   const handleSearch = () => {
-    fetchRoles(true); // Выполняем поиск с параметрами
+    fetchRoles(); // Выполняем поиск с параметрами
   };
 
-  // Функция экспорта в Excel
   const handleExportToExcel = async () => {
     setIsExporting(true); // Устанавливаем состояние загрузки для кнопки
 
@@ -127,7 +124,6 @@ export default function ProductsView() {
       const selectedTab = tabs.find((tab) => tab.label === currentTab);
       const serviceParam = selectedTab?.service ? `&service=${selectedTab.service}` : '';
 
-      // Формируем URL для получения всех данных
       let url = `/companies/${idCompany}/sales/?page_size=${totalProducts}${serviceParam}`;
 
       if (startDate && endDate) {
@@ -174,26 +170,24 @@ export default function ProductsView() {
       ...value,
     })) || [];
 
-  const displayedData = currentData; // Теперь просто используем текущие данные
+  const displayedData = currentData;
 
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Продажи</Typography>
 
-        {/* Кнопка для экспорта в Excel */}
         <Button
           variant="contained"
           color="inherit"
           startIcon={isExporting ? <CircularProgress size={20} /> : <PiMicrosoftExcelLogo />}
           onClick={handleExportToExcel}
-          disabled={isExporting} // Отключаем кнопку во время загрузки
+          disabled={isExporting}
         >
           {isExporting ? 'Загрузка...' : 'Экспорт в Excel'}
         </Button>
       </Stack>
 
-      {/* Таб для фильтрации */}
       <Tabs
         value={currentTab}
         onChange={handleTabChange}
@@ -254,16 +248,17 @@ export default function ProductsView() {
                 </TableBody>
               </Table>
             </TableContainer>
-          </Card>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25, 50, 100, 200]}
-            component="div"
-            count={totalProducts}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
+
+            <TablePagination
+              rowsPerPageOptions={[100, 500, 1000]}
+              component="div"
+              count={totalProducts}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+            </Card>
         </>
       )}
     </Container>
