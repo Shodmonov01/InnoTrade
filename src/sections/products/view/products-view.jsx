@@ -91,7 +91,7 @@ export default function ProductsView() {
   
   useEffect(() => {
     fetchRoles();
-  }, [currentTab, page, rowsPerPage, startDate, endDate, filterName, sort]);
+  }, [currentTab, page, rowsPerPage]);
 
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
