@@ -206,9 +206,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from '@mui/material/Tooltip';
 import Iconify from 'src/components/iconify';
 import { Button } from '@mui/material';
-import { BsCheck2, BsCheck2All } from "react-icons/bs";
+import { BsCheck2All } from 'react-icons/bs';
 
-export default function UserTableToolbar({
+export default function UserTableVP({
   numSelected,
   filterName,
   onFilterName,
@@ -225,16 +225,11 @@ export default function UserTableToolbar({
         ...(numSelected > 0 && {
           color: 'primary.main',
           bgcolor: 'primary.lighter',
-          
         }),
       }}
     >
       <div>
-        {numSelected > 0 ? (
-          <Typography component="div" variant="subtitle1">
-            {numSelected} selected
-          </Typography>
-        ) : (
+  
           <>
             <OutlinedInput
               value={filterName}
@@ -254,10 +249,10 @@ export default function UserTableToolbar({
               Поиск
             </Button> */}
           </>
-        )}
+        
       </div>
 
-      <div className='mr-12'>
+      <div className='mr-20'>
         {/* {numSelected > 0 ? (
           <Tooltip title="Delete">
             <IconButton>
@@ -271,16 +266,15 @@ export default function UserTableToolbar({
             </IconButton>
           </Tooltip>
         )} */}
-        <Button  variant="contained" size='large' color="warning" onClick={onSubmitAllProduction}>
+        <Button variant="contained" color="primary" onClick={onSubmitAllProduction}>
         <BsCheck2All />
-
         </Button>
       </div>
     </Toolbar>
   );
 }
 
-UserTableToolbar.propTypes = {
+UserTableVP.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,

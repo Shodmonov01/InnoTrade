@@ -1,99 +1,49 @@
-// // import React, { useEffect, useState } from 'react';
-// // import axios from 'axios';
-// // import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-// // import { axiosInstance } from 'src/api/api';
-
-// // export default function ProductionRecommendations() {
-// //   const [data, setData] = useState([]);
-// //   const [isLoading, setIsLoading] = useState(true); // Для отслеживания состояния загрузки
-
-// //   const fetchData = async () => {
-// //     setIsLoading(true); // Начало загрузки
-// //     try {
-// //       const token = JSON.parse(localStorage.getItem('token')).access;
-// //       const idCompany = localStorage.getItem('selectedCompany'); // Получаем ID компании из localStorage
-
-// //       const url = `/companies/${idCompany}/recomend/`;
-// //       const response = await axiosInstance.get(url, {
-// //         headers: {
-// //           Authorization: `Bearer ${token}`,
-// //         },
-// //       });
-      
-// //       setData(response.data.results); // Установка данных в состояние
-// //     } catch (error) {
-// //       console.error("Ошибка при загрузке данных:", error);
-// //     } finally {
-// //       setIsLoading(false); // Завершение загрузки
-// //     }
-// //   };
-
-// //   useEffect(() => {
-// //     fetchData(); // Вызов функции загрузки данных при монтировании компонента
-// //   }, []);
-
-// //   if (isLoading) {
-// //     return <div>Загрузка...</div>; // Можно добавить индикатор загрузки
-// //   }
-
-// //   return (
-// //     <TableContainer>
-// //       <Table>
-// //         <TableHead>
-// //           <TableRow>
-// //             {/* <TableCell>Артикул</TableCell> */}
-// //             <TableCell>Продукт</TableCell>
-// //             <TableCell>Количество</TableCell>
-// //             <TableCell>Осталось дней</TableCell>
-// //             <TableCell>Заявка на производство</TableCell>
-// //           </TableRow>
-// //         </TableHead>
-// //         <TableBody>
-// //           {data.map((row) => (
-// //             <TableRow key={row.id}>
-// //               {/* <TableCell>{row.id}</TableCell> */}
-// //               <TableCell>{row.product}</TableCell>
-// //               <TableCell>{row.quantity}</TableCell>
-// //               <TableCell>{row.days_left}</TableCell>
-// //               <TableCell>{row.application_for_production}</TableCell>
-// //             </TableRow>
-// //           ))}
-// //         </TableBody>
-// //       </Table>
-// //     </TableContainer>
-// //   );
-// // }
-
-
 // import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-// import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Grid } from '@mui/material';
-// // import * as XLSX from 'xlsx';
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableContainer,
+//   TableHead,
+//   TableRow,
+//   Button,
+// } from '@mui/material';
 // import UserTableToolbar from './user-table-toolbar';
 // import { axiosInstance } from 'src/api/api';
 
 // export default function ProductionRecommendations() {
 //   const [data, setData] = useState([]);
 //   const [isLoading, setIsLoading] = useState(true);
-//   const [filterName, setFilterName] = useState(''); // Для фильтрации данных
-//   const [selected, setSelected] = useState([]); // Для подсчета выбранных
+//   const [filterName, setFilterName] = useState('');
+//   const [selected, setSelected] = useState([]);
+//   const [productionValues, setProductionValues] = useState({}); // Для хранения измененных значений
+//   const [page, setPage] = useState(0);
+//   const [rowsPerPage, setRowsPerPage] = useState(100);
+//   const [pageSize, setPageSize] = useState(500);
 
 //   const fetchData = async () => {
 //     setIsLoading(true);
 //     try {
 //       const token = JSON.parse(localStorage.getItem('token')).access;
-//       const idCompany = localStorage.getItem('selectedCompany'); 
+//       const idCompany = localStorage.getItem('selectedCompany');
 
-//       const url = `/companies/${idCompany}/recomend/`;
+//       // const url = `/companies/${idCompany}/recomend/`;
+//       let url = `/companies/${idCompany}/recomend/?page_size=${rowsPerPage}&page=${page + 1}${serviceParam}`;
 //       const response = await axiosInstance.get(url, {
 //         headers: {
 //           Authorization: `Bearer ${token}`,
 //         },
 //       });
-      
+
 //       setData(response.data.results);
+//       // Инициализация значений для каждого recommendation
+//       const initialProductionValues = response.data.results.reduce((acc, row) => {
+//         acc[row.id] = row.application_for_production || ''; // Если нет значения, то пустая строка
+//         return acc;
+//       }, {});
+//       setProductionValues(initialProductionValues);
 //     } catch (error) {
-//       console.error("Ошибка при загрузке данных:", error);
+//       console.error('Ошибка при загрузке данных:', error);
 //     } finally {
 //       setIsLoading(false);
 //     }
@@ -104,114 +54,251 @@
 //   }, []);
 
 //   const handleFilterByName = (event) => {
-//     setFilterName(event.target.value); // Обновление фильтра
+//     setFilterName(event.target.value);
 //   };
 
-//   // const exportToExcel = () => {
-//   //   const worksheet = XLSX.utils.json_to_sheet(data);
-//   //   const workbook = XLSX.utils.book_new();
-//   //   XLSX.utils.book_append_sheet(workbook, worksheet, 'Рекомендации');
-//   //   XLSX.writeFile(workbook, 'recommendations.xlsx');
-//   // };
+//   const handleProductionValueChange = (id, value) => {
+//     setProductionValues({
+//       ...productionValues,
+//       [id]: value, // Обновляем значение для конкретного id
+//     });
+//   };
+
+//   const handleSubmitProduction = async (id) => {
+//     try {
+//       const token = JSON.parse(localStorage.getItem('token')).access;
+//       const idCompany = localStorage.getItem('selectedCompany');
+//       const url = `/companies/${idCompany}/prodcution/`;
+
+//       // Если пользователь не изменил значение, используем исходное значение из row.product
+//       const productionValue =
+//         productionValues[id] !== undefined
+//           ? productionValues[id]
+//           : data.find((row) => row.id === id).product;
+
+//       await axiosInstance.post(
+//         url,
+//         {
+//           recommendations_id: id,
+//           application_for_production: productionValue, // Отправляем либо измененное значение, либо исходное из row.product
+//         },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       setProductionValues((prevValues) => ({ ...prevValues, [id]: '' }));
+
+//       console.log('Успешно отправлено на производство:', id);
+//     } catch (error) {
+//       console.error('Ошибка при отправке данных на производство:', error);
+//     }
+//   };
+
+//   const handleSubmitAllProduction = async () => {
+//     try {
+//       const token = JSON.parse(localStorage.getItem('token')).access;
+//       const idCompany = localStorage.getItem('selectedCompany');
+//       const url = `/companies/${idCompany}/prodcution/`;
+
+//       // Фильтруем только те записи, у которых есть введенное значение больше 0
+//       const filteredProductionValues = Object.keys(productionValues)
+//         .filter((id) => productionValues[id] && productionValues[id] > 0)
+//         .map((id) => ({ id, value: productionValues[id] }));
+
+//       // Если нет значений для отправки, выходим из функции
+//       if (filteredProductionValues.length === 0) {
+//         console.log('Нет данных для отправки');
+//         return;
+//       }
+
+//       // Отправляем запросы только для фильтрованных значений
+//       const requests = filteredProductionValues.map(({ id, value }) => {
+//         return axiosInstance.post(
+//           url,
+//           {
+//             recommendations_id: id,
+//             application_for_production: value,
+//           },
+//           {
+//             headers: {
+//               Authorization: `Bearer ${token}`,
+//             },
+//           }
+//         );
+//       });
+
+//       // Ждем выполнения всех запросов
+//       await Promise.all(requests);
+
+//       // После успешной отправки обновляем количество товара
+//       setData((prevData) =>
+//         prevData.map((row) => {
+//           const updatedValue = productionValues[row.id];
+//           if (updatedValue && updatedValue > 0) {
+//             return {
+//               ...row,
+//               quantity: row.quantity - updatedValue,
+//             };
+//           }
+//           return row;
+//         })
+//       );
+
+//       // Очищаем инпуты только для тех записей, которые были отправлены
+//       const updatedProductionValues = { ...productionValues };
+//       filteredProductionValues.forEach(({ id }) => {
+//         updatedProductionValues[id] = ''; // Сбрасываем значение инпута
+//       });
+//       setProductionValues(updatedProductionValues);
+
+//       console.log('Успешно отправлены данные для выбранных значений');
+//     } catch (error) {
+//       console.error('Ошибка при отправке данных:', error);
+//     }
+//   };
 
 //   if (isLoading) {
 //     return <div>Загрузка...</div>;
 //   }
 
+//   const handleSearch = () => {
+//     // Вызываем fetchData с фильтром по артикулу
+//     fetchData(filterName);
+//   };
+
 //   return (
 //     <div>
-//       <div className='flex items-center'>
 //       <UserTableToolbar
 //         numSelected={selected.length}
 //         filterName={filterName}
 //         onFilterName={handleFilterByName}
+//         onSubmitAllProduction={handleSubmitAllProduction}
+//         onSearch={handleSearch} // Передаем функцию для поиска по артикулу
 //       />
-
-     
-        
-//           <Button variant="contained" color="primary" onClick={() => console.log("Подсчет")}>
-//             Подсчет
-//           </Button>
-        
-        
-//           <Button variant="contained" color="secondary" onClick={() => console.log("Настройки")}>
-//             Настройки
-//           </Button>
-        
-       
-//           {/* <Button variant="contained" color="default" onClick={exportToExcel}>
-//             Экспорт в Excel
-//           </Button> */}
-        
-      
-//       </div>
 
 //       <TableContainer>
 //         <Table>
 //           <TableHead>
 //             <TableRow>
-//               <TableCell>Артикул</TableCell>
+//               {/* <TableCell>Артикул</TableCell> */}
 //               <TableCell>Продукт</TableCell>
 //               <TableCell>Количество</TableCell>
 //               <TableCell>Осталось дней</TableCell>
 //               <TableCell>Заявка на производство</TableCell>
+//               <TableCell>Действия</TableCell>
 //             </TableRow>
 //           </TableHead>
 //           <TableBody>
 //             {data
-//               .filter(row => row.product.toLowerCase().includes(filterName.toLowerCase())) // Фильтрация по названию продукта
+//               .filter((row) => row.product.toLowerCase().includes(filterName.toLowerCase()))
 //               .map((row) => (
 //                 <TableRow key={row.id}>
-//                   <TableCell>{row.id}</TableCell>
 //                   <TableCell>{row.product}</TableCell>
 //                   <TableCell>{row.quantity}</TableCell>
 //                   <TableCell>{row.days_left}</TableCell>
-//                   <TableCell>{row.application_for_production}</TableCell>
+//                   <TableCell>
+//                     {/* <input
+//                       type="number"
+//                       value={productionValues[row.id] || row.quantity || ''} // Используем row.quantity, если productionValues пусто
+//                       onChange={(e) => handleProductionValueChange(row.id, e.target.value)} // Обновляем значение при изменении
+//                       className="block w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+//                     /> */}
+//                     <input
+//                       type="number"
+//                       value={
+//                         productionValues[row.id] !== undefined
+//                           ? productionValues[row.id]
+//                           : row.product
+//                       } // По умолчанию значение из row.product
+//                       onChange={(e) => handleProductionValueChange(row.id, e.target.value)} // Обновляем значение при изменении
+//                       className="block w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+//                     />
+//                   </TableCell>
+//                   <TableCell>
+//                     <Button
+//                       variant="contained"
+//                       color="warning"
+//                       onClick={() => handleSubmitProduction(row.id)} // Отправляем данные на сервер для одной строки
+//                     >
+//                       В работу
+//                     </Button>
+//                   </TableCell>
 //                 </TableRow>
 //               ))}
 //           </TableBody>
 //         </Table>
 //       </TableContainer>
+//       <TablePagination
+//               rowsPerPageOptions={[100, 500, 1000]}
+//               component="div"
+//               count={totalProducts}
+//               rowsPerPage={rowsPerPage}
+//               page={page}
+//               onPageChange={handleChangePage}
+//               onRowsPerPageChange={handleChangeRowsPerPage}
+//             />
 //     </div>
 //   );
 // }
 
-
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  TablePagination,
+} from '@mui/material';
 import UserTableToolbar from './user-table-toolbar';
 import { axiosInstance } from 'src/api/api';
+import { BsCheck2 } from "react-icons/bs";
+
 
 export default function ProductionRecommendations() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filterName, setFilterName] = useState('');
   const [selected, setSelected] = useState([]);
-  const [productionValues, setProductionValues] = useState({}); // Для хранения измененных значений
+  const [productionValues, setProductionValues] = useState({});
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [totalProducts, setTotalProducts] = useState(0); // Для хранения общего количества продуктов
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
       const token = JSON.parse(localStorage.getItem('token')).access;
-      const idCompany = localStorage.getItem('selectedCompany'); 
+      const idCompany = localStorage.getItem('selectedCompany');
+      const serviceParam = ''; // Ваш параметр сервиса, если есть
 
-      const url = `/companies/${idCompany}/recomend/`;
+      // Обновленный URL с учётом пагинации
+      let url = `/companies/${idCompany}/recomend/?page_size=${rowsPerPage}&page=${
+        page + 1
+      }${serviceParam}`;
+
       const response = await axiosInstance.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+
       setData(response.data.results);
+      setTotalProducts(response.data.count); // Сохраняем общее количество продуктов
+
       // Инициализация значений для каждого recommendation
       const initialProductionValues = response.data.results.reduce((acc, row) => {
-        acc[row.id] = row.application_for_production || ''; // Если нет значения, то пустая строка
+        acc[row.id] = row.application_for_production || '';
         return acc;
       }, {});
       setProductionValues(initialProductionValues);
     } catch (error) {
-      console.error("Ошибка при загрузке данных:", error);
+      console.error('Ошибка при загрузке данных:', error);
     } finally {
       setIsLoading(false);
     }
@@ -219,7 +306,7 @@ export default function ProductionRecommendations() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, rowsPerPage]); // Перезапускаем fetchData при изменении страницы или количества элементов
 
   const handleFilterByName = (event) => {
     setFilterName(event.target.value);
@@ -228,7 +315,7 @@ export default function ProductionRecommendations() {
   const handleProductionValueChange = (id, value) => {
     setProductionValues({
       ...productionValues,
-      [id]: value, // Обновляем значение для конкретного id
+      [id]: value,
     });
   };
 
@@ -237,12 +324,31 @@ export default function ProductionRecommendations() {
       const token = JSON.parse(localStorage.getItem('token')).access;
       const idCompany = localStorage.getItem('selectedCompany');
       const url = `/companies/${idCompany}/prodcution/`;
-
+  
+      // Найдем строку данных по id
+      const foundRow = data.find((row) => row.id === id);
+  
+      // Определим значение для productionValue
+      let productionValue = productionValues[id];
+  
+      // Если значение пустое, используем количество (quantity) из строки данных
+      if (!productionValue || productionValue === '') {
+        productionValue = foundRow ? foundRow.quantity : ''; // Берём значение из row.quantity, если пусто
+      }
+  
+      // Приводим значение к числу
+      productionValue = parseFloat(productionValue); // Преобразуем в число
+  
+      // Проверка значений перед отправкой
+      console.log('recommendations_id:', id);
+      console.log('application_for_production:', productionValue); // Проверим, что значение передается как число
+  
+      // Отправляем запрос на сервер
       await axiosInstance.post(
         url,
         {
           recommendations_id: id,
-          application_for_production: productionValues[id], // Значение для данного recommendation
+          application_for_production: productionValue, // Используем значение как число
         },
         {
           headers: {
@@ -250,11 +356,82 @@ export default function ProductionRecommendations() {
           },
         }
       );
-
-      console.log("Успешно отправлено на производство:", id);
+  
+      // После отправки очищаем значение
+      setProductionValues((prevValues) => ({ ...prevValues, [id]: '' }));
+  
+      console.log('Успешно отправлено на производство:', id);
     } catch (error) {
-      console.error("Ошибка при отправке данных на производство:", error);
+      console.error('Ошибка при отправке данных на производство:', error);
     }
+  };
+  
+
+  const handleSubmitAllProduction = async () => {
+    try {
+      const token = JSON.parse(localStorage.getItem('token')).access;
+      const idCompany = localStorage.getItem('selectedCompany');
+      const url = `/companies/${idCompany}/prodcution/`;
+  
+      const filteredProductionValues = Object.keys(productionValues)
+        .filter((id) => productionValues[id] && productionValues[id] > 0)
+        .map((id) => ({ id, value: parseFloat(productionValues[id]) })); // Преобразуем в число
+  
+      if (filteredProductionValues.length === 0) {
+        console.log('Нет данных для отправки');
+        return;
+      }
+  
+      const requests = filteredProductionValues.map(({ id, value }) => {
+        return axiosInstance.post(
+          url,
+          {
+            recommendations_id: id,
+            application_for_production: value,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      });
+  
+      await Promise.all(requests);
+  
+      setData((prevData) =>
+        prevData.map((row) => {
+          const updatedValue = productionValues[row.id];
+          if (updatedValue && updatedValue > 0) {
+            return {
+              ...row,
+              quantity: row.quantity - updatedValue,
+            };
+          }
+          return row;
+        })
+      );
+  
+      const updatedProductionValues = { ...productionValues };
+      filteredProductionValues.forEach(({ id }) => {
+        updatedProductionValues[id] = '';
+      });
+      setProductionValues(updatedProductionValues);
+  
+      console.log('Успешно отправлены данные для выбранных значений');
+    } catch (error) {
+      console.error('Ошибка при отправке данных:', error);
+    }
+  };
+  
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage); // Обновляем текущую страницу
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10)); // Обновляем количество строк на странице
+    setPage(0); // Сбрасываем страницу на первую
   };
 
   if (isLoading) {
@@ -267,13 +444,14 @@ export default function ProductionRecommendations() {
         numSelected={selected.length}
         filterName={filterName}
         onFilterName={handleFilterByName}
+        onSubmitAllProduction={handleSubmitAllProduction}
       />
 
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Артикул</TableCell>
+              {/* <TableCell>шид</TableCell> */}
               <TableCell>Продукт</TableCell>
               <TableCell>Количество</TableCell>
               <TableCell>Осталось дней</TableCell>
@@ -283,27 +461,37 @@ export default function ProductionRecommendations() {
           </TableHead>
           <TableBody>
             {data
-              .filter(row => row.product.toLowerCase().includes(filterName.toLowerCase()))
+              .filter((row) => row.product.toLowerCase().includes(filterName.toLowerCase()))
               .map((row) => (
                 <TableRow key={row.id}>
-                  <TableCell>{row.id}</TableCell>
+                  {/* <TableCell>{row.id}</TableCell> */}
                   <TableCell>{row.product}</TableCell>
                   <TableCell>{row.quantity}</TableCell>
                   <TableCell>{row.days_left}</TableCell>
                   <TableCell>
+                    {/* <input
+                      type="number"
+                      value={productionValues[row.id] || row.quantity || ''}
+                      onChange={(e) => handleProductionValueChange(row.id, e.target.value)}
+                      className="block w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    /> */}
+
                     <input
                       type="number"
-                      value={productionValues[row.id]} // Значение берется из состояния
+                      value={productionValues[row.id] !== undefined ? productionValues[row.id] : ''} // Если есть значение в productionValues, берем его, иначе оставляем пусто
                       onChange={(e) => handleProductionValueChange(row.id, e.target.value)} // Обновляем значение при изменении
+                      placeholder={row.quantity} // Дефолтное значение в placeholder, но не в value, чтобы позволить стереть его
+                      className="block w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </TableCell>
                   <TableCell>
                     <Button
                       variant="contained"
                       color="warning"
-                      onClick={() => handleSubmitProduction(row.id)} // Отправляем данные на сервер
+                      onClick={() => handleSubmitProduction(row.id)}
                     >
-                      В работу
+                              <BsCheck2 />
+
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -311,6 +499,16 @@ export default function ProductionRecommendations() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <TablePagination
+        rowsPerPageOptions={[100, 500, 1000]}
+        component="div"
+        count={totalProducts} // Общее количество продуктов для корректной пагинации
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
     </div>
   );
 }
