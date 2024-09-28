@@ -114,7 +114,7 @@ export default function InventoryTableToolbar({
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: '8px' }} className="border rounded-lg p-3.5">
+        {/* <div style={{ display: 'flex', gap: '8px' }} className="border rounded-lg p-3.5">
           <input
             type="date"
             onChange={handleStartDateChange}
@@ -124,7 +124,7 @@ export default function InventoryTableToolbar({
             type="date"
             onChange={handleEndDateChange}
           />
-        </div>
+        </div> */}
 
         <Button variant="contained" onClick={handleOpen}>
           Добавить Товар
