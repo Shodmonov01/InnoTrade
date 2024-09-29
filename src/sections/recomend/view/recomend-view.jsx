@@ -282,7 +282,7 @@
 
 
 import { useState } from 'react';
-import { Container, Tabs, Tab, CircularProgress } from '@mui/material';
+import { Container, Tabs, Tab, CircularProgress, Typography } from '@mui/material';
 import React, { Suspense } from 'react';
 
 // Ленивое подключение компонентов
@@ -297,8 +297,13 @@ export default function RecomendView() {
     setCurrentTab(newValue);
   };
 
+  
+
   return (
     <Container>
+
+     <Typography variant="h4">Рекомендации</Typography>
+
       <Tabs value={currentTab} onChange={handleChange}>
         <Tab label="Рекомендации производства" />
         <Tab label="Рекомендации отгрузок" />

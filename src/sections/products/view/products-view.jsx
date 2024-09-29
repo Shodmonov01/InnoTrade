@@ -30,6 +30,7 @@ const tabs = [
   { label: 'Yandex Market', service: 'yandexmarket' },
 ];
 
+
 export default function ProductsView() {
   const [currentTab, setCurrentTab] = useState('Общие');
   const [page, setPage] = useState(0);

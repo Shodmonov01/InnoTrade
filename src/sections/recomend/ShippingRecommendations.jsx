@@ -9,6 +9,7 @@
 // //   TableRow,
 // //   TablePagination,
 // //   Paper,
+// //   Typography,
 // // } from '@mui/material';
 // // import { axiosInstance } from 'src/api/api';
 
@@ -18,6 +19,7 @@
 // //   const [rowsPerPage, setRowsPerPage] = useState(100); // Количество строк на страницу по умолчанию
 // //   const [page, setPage] = useState(0); // Текущая страница
 // //   const [loading, setLoading] = useState(true);
+// //   const [regions, setRegions] = useState([]); // Список филиалов
 
 // //   useEffect(() => {
 // //     const fetchData = async () => {
@@ -33,10 +35,16 @@
 // //             },
 // //           }
 // //         );
-// //         console.log(response.data.results);
-        
+
 // //         setData(response.data.results || []);
-// //         setTotalProducts(response.data.product_count || 0); // Общее количество товаров для пагинации
+// //         setTotalProducts(response.data.product_count || 0);
+
+// //         // Получаем уникальный список филиалов для заголовков
+// //         const uniqueRegions = [
+// //           ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name)))
+// //         ];
+// //         setRegions(uniqueRegions);
+
 // //         setLoading(false);
 // //         console.log(response.data);
 // //       } catch (err) {
@@ -62,25 +70,47 @@
 
 // //   return (
 // //     <Paper>
-// //       <TableContainer>
+// //       <TableContainer style={{ overflowX: 'auto' }}>
 // //         <Table>
 // //           <TableHead>
 // //             <TableRow>
 // //               <TableCell>Артикул</TableCell>
-// //               <TableCell>Центральный ФО</TableCell>
-// //               <TableCell>Южный ФО</TableCell>
-// //               <TableCell>Уральский ФО</TableCell>
-// //               <TableCell>Северо-Западный ФО</TableCell>
+// //               {regions.map((region) => (
+// //                 <TableCell key={region}>{region}</TableCell>
+// //               ))}
+// //             </TableRow>
+// //             <TableRow>
+// //               <TableCell />
+// //               {regions.map((region) => (
+// //                 <TableCell key={region}>Количество</TableCell>
+// //               ))}
+// //             </TableRow>
+// //             <TableRow>
+// //               <TableCell />
+// //               {regions.map((region) => (
+// //                 <TableCell key={region}>Осталось дней</TableCell>
+// //               ))}
 // //             </TableRow>
 // //           </TableHead>
 // //           <TableBody>
 // //             {data.map((row) => (
 // //               <TableRow key={row.product}>
 // //                 <TableCell>{row.product}</TableCell>
-// //                 <TableCell>{row.data[0]?.central || '-'}</TableCell>
-// //                 <TableCell>{row.data[0]?.south || '-'}</TableCell>
-// //                 <TableCell>{row.data[0]?.ural || '-'}</TableCell>
-// //                 <TableCell>{row.data[0]?.northWest || '-'}</TableCell>
+// //                 {regions.map((region) => {
+// //                   const regionData = row.data.find((r) => r.region_name === region);
+// //                   return (
+// //                     <TableCell key={region}>
+// //                       {regionData ? (
+// //                         <>
+// //                           <Typography>{regionData.quantity}</Typography>
+// //                           <Typography>{regionData.days_left}</Typography>
+// //                         </>
+// //                       ) : (
+// //                         <Typography>Нет данных</Typography>
+// //                       )}
+// //                     </TableCell>
+// //                   );
+// //                 })}
 // //               </TableRow>
 // //             ))}
 // //           </TableBody>
@@ -102,7 +132,6 @@
 
 
 // import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
 // import {
 //   Table,
 //   TableBody,
@@ -122,6 +151,7 @@
 //   const [rowsPerPage, setRowsPerPage] = useState(100); // Количество строк на страницу по умолчанию
 //   const [page, setPage] = useState(0); // Текущая страница
 //   const [loading, setLoading] = useState(true);
+//   const [regions, setRegions] = useState([]); // Список филиалов
 
 //   useEffect(() => {
 //     const fetchData = async () => {
@@ -137,8 +167,16 @@
 //             },
 //           }
 //         );
+
 //         setData(response.data.results || []);
-//         setTotalProducts(response.data.product_count || 0); // Общее количество товаров для пагинации
+//         setTotalProducts(response.data.product_count || 0);
+
+//         // Получаем уникальный список филиалов для заголовков
+//         const uniqueRegions = [
+//           ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name))),
+//         ];
+//         setRegions(uniqueRegions);
+
 //         setLoading(false);
 //         console.log(response.data);
 //       } catch (err) {
@@ -164,35 +202,47 @@
 
 //   return (
 //     <Paper>
-//       <TableContainer>
+//       <TableContainer style={{ overflowX: 'auto' }}>
 //         <Table>
 //           <TableHead>
 //             <TableRow>
-//               <TableCell>Артикул</TableCell>
-//               <TableCell>Филиалы</TableCell>
-//               <TableCell>Количество</TableCell>
-//               <TableCell>Осталось дней</TableCell>
+//               <TableCell rowSpan={2}>Артикул</TableCell>
+//               {regions.map((region) => (
+//                 <TableCell key={region} colSpan={2} align="center">
+//                   {region}
+//                 </TableCell>
+//               ))}
+//             </TableRow>
+//             <TableRow>
+//               {regions.map((region) => (
+//                 <>
+//                   <TableCell key={`${region}-quantity`} align="center">
+//                     Количество
+//                   </TableCell>
+//                   <TableCell key={`${region}-days_left`} align="center">
+//                     Осталось дней
+//                   </TableCell>
+//                 </>
+//               ))}
 //             </TableRow>
 //           </TableHead>
 //           <TableBody>
 //             {data.map((row) => (
 //               <TableRow key={row.product}>
 //                 <TableCell>{row.product}</TableCell>
-//                 <TableCell>
-//                   {row.data.map((region, index) => (
-//                     <Typography key={index}>{region.region_name}</Typography>
-//                   ))}
-//                 </TableCell>
-//                 <TableCell>
-//                   {row.data.map((region, index) => (
-//                     <Typography key={index}>{region.quantity}</Typography>
-//                   ))}
-//                 </TableCell>
-//                 <TableCell>
-//                   {row.data.map((region, index) => (
-//                     <Typography key={index}>{region.days_left}</Typography>
-//                   ))}
-//                 </TableCell>
+//                 {regions.map((region) => {
+//                   const regionData = row.data.find((r) => r.region_name === region);
+//                   return (
+//                     <>
+//                       <TableCell key={`${region}-quantity`} align="center">
+//                         {regionData ? regionData.quantity : '0'}
+//                       </TableCell>
+//                       <TableCell key={`${region}-days_left`} align="center">
+//                         {regionData ? regionData.days_left : '0'}
+//                       </TableCell>
+//                     </>
+//                   );
+//                 })}
 //               </TableRow>
 //             ))}
 //           </TableBody>
@@ -214,7 +264,6 @@
 
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import {
   Table,
   TableBody,
@@ -256,7 +305,7 @@ export default function ShippingRecommendations() {
 
         // Получаем уникальный список филиалов для заголовков
         const uniqueRegions = [
-          ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name)))
+          ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name))),
         ];
         setRegions(uniqueRegions);
 
@@ -289,41 +338,60 @@ export default function ShippingRecommendations() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Артикул</TableCell>
+              <TableCell 
+                rowSpan={2} 
+                style={{
+                  position: 'sticky',
+                  left: 0,
+                  backgroundColor: '#fff',
+                  zIndex: 1,
+                }}
+              >
+                Артикул
+              </TableCell>
               {regions.map((region) => (
-                <TableCell key={region}>{region}</TableCell>
+                <TableCell key={region} colSpan={2} align="center">
+                  {region}
+                </TableCell>
               ))}
             </TableRow>
             <TableRow>
-              <TableCell />
               {regions.map((region) => (
-                <TableCell key={region}>Количество</TableCell>
-              ))}
-            </TableRow>
-            <TableRow>
-              <TableCell />
-              {regions.map((region) => (
-                <TableCell key={region}>Осталось дней</TableCell>
+                <>
+                  <TableCell key={`${region}-quantity`} align="center">
+                    Количество
+                  </TableCell>
+                  <TableCell key={`${region}-days_left`} align="center">
+                    Осталось дней
+                  </TableCell>
+                </>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {data.map((row) => (
               <TableRow key={row.product}>
-                <TableCell>{row.product}</TableCell>
+                <TableCell 
+                  style={{
+                    position: 'sticky',
+                    left: 0,
+                    backgroundColor: '#fff',
+                    zIndex: 1,
+                  }}
+                >
+                  {row.product}
+                </TableCell>
                 {regions.map((region) => {
                   const regionData = row.data.find((r) => r.region_name === region);
                   return (
-                    <TableCell key={region}>
-                      {regionData ? (
-                        <>
-                          <Typography>{regionData.quantity}</Typography>
-                          <Typography>{regionData.days_left}</Typography>
-                        </>
-                      ) : (
-                        <Typography>Нет данных</Typography>
-                      )}
-                    </TableCell>
+                    <>
+                      <TableCell key={`${region}-quantity`} align="center">
+                        {regionData ? regionData.quantity : '0'}
+                      </TableCell>
+                      <TableCell key={`${region}-days_left`} align="center">
+                        {regionData ? regionData.days_left : '0'}
+                      </TableCell>
+                    </>
                   );
                 })}
               </TableRow>
