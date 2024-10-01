@@ -1,459 +1,3 @@
-// // // import React, { useEffect, useState } from 'react';
-// // // import axios from 'axios';
-// // // import {
-// // //   Table,
-// // //   TableBody,
-// // //   TableCell,
-// // //   TableContainer,
-// // //   TableHead,
-// // //   TableRow,
-// // //   TablePagination,
-// // //   Paper,
-// // //   Typography,
-// // // } from '@mui/material';
-// // // import { axiosInstance } from 'src/api/api';
-
-// // // export default function ShippingRecommendations() {
-// // //   const [data, setData] = useState([]);
-// // //   const [totalProducts, setTotalProducts] = useState(0);
-// // //   const [rowsPerPage, setRowsPerPage] = useState(100); // Количество строк на страницу по умолчанию
-// // //   const [page, setPage] = useState(0); // Текущая страница
-// // //   const [loading, setLoading] = useState(true);
-// // //   const [regions, setRegions] = useState([]); // Список филиалов
-
-// // //   useEffect(() => {
-// // //     const fetchData = async () => {
-// // //       try {
-// // //         const token = JSON.parse(localStorage.getItem('token')).access;
-// // //         const idCompany = localStorage.getItem('selectedCompany');
-
-// // //         const response = await axiosInstance.get(
-// // //           `companies/${idCompany}/supplier/?page_size=${rowsPerPage}&page=${page + 1}`,
-// // //           {
-// // //             headers: {
-// // //               Authorization: `Bearer ${token}`,
-// // //             },
-// // //           }
-// // //         );
-
-// // //         setData(response.data.results || []);
-// // //         setTotalProducts(response.data.product_count || 0);
-
-// // //         // Получаем уникальный список филиалов для заголовков
-// // //         const uniqueRegions = [
-// // //           ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name)))
-// // //         ];
-// // //         setRegions(uniqueRegions);
-
-// // //         setLoading(false);
-// // //         console.log(response.data);
-// // //       } catch (err) {
-// // //         console.error('Ошибка при получении данных:', err.message);
-// // //       }
-// // //     };
-
-// // //     fetchData();
-// // //   }, [rowsPerPage, page]);
-
-// // //   const handleChangePage = (event, newPage) => {
-// // //     setPage(newPage);
-// // //   };
-
-// // //   const handleChangeRowsPerPage = (event) => {
-// // //     setRowsPerPage(parseInt(event.target.value, 10));
-// // //     setPage(0); // Сбрасываем на первую страницу при изменении количества строк на странице
-// // //   };
-
-// // //   if (loading) {
-// // //     return <p>Загрузка...</p>;
-// // //   }
-
-// // //   return (
-// // //     <Paper>
-// // //       <TableContainer style={{ overflowX: 'auto' }}>
-// // //         <Table>
-// // //           <TableHead>
-// // //             <TableRow>
-// // //               <TableCell>Артикул</TableCell>
-// // //               {regions.map((region) => (
-// // //                 <TableCell key={region}>{region}</TableCell>
-// // //               ))}
-// // //             </TableRow>
-// // //             <TableRow>
-// // //               <TableCell />
-// // //               {regions.map((region) => (
-// // //                 <TableCell key={region}>Количество</TableCell>
-// // //               ))}
-// // //             </TableRow>
-// // //             <TableRow>
-// // //               <TableCell />
-// // //               {regions.map((region) => (
-// // //                 <TableCell key={region}>Осталось дней</TableCell>
-// // //               ))}
-// // //             </TableRow>
-// // //           </TableHead>
-// // //           <TableBody>
-// // //             {data.map((row) => (
-// // //               <TableRow key={row.product}>
-// // //                 <TableCell>{row.product}</TableCell>
-// // //                 {regions.map((region) => {
-// // //                   const regionData = row.data.find((r) => r.region_name === region);
-// // //                   return (
-// // //                     <TableCell key={region}>
-// // //                       {regionData ? (
-// // //                         <>
-// // //                           <Typography>{regionData.quantity}</Typography>
-// // //                           <Typography>{regionData.days_left}</Typography>
-// // //                         </>
-// // //                       ) : (
-// // //                         <Typography>Нет данных</Typography>
-// // //                       )}
-// // //                     </TableCell>
-// // //                   );
-// // //                 })}
-// // //               </TableRow>
-// // //             ))}
-// // //           </TableBody>
-// // //         </Table>
-// // //       </TableContainer>
-
-// // //       <TablePagination
-// // //         rowsPerPageOptions={[100, 500, 1000]}
-// // //         component="div"
-// // //         count={totalProducts}
-// // //         rowsPerPage={rowsPerPage}
-// // //         page={page}
-// // //         onPageChange={handleChangePage}
-// // //         onRowsPerPageChange={handleChangeRowsPerPage}
-// // //       />
-// // //     </Paper>
-// // //   );
-// // // }
-
-
-// // import React, { useEffect, useState } from 'react';
-// // import {
-// //   Table,
-// //   TableBody,
-// //   TableCell,
-// //   TableContainer,
-// //   TableHead,
-// //   TableRow,
-// //   TablePagination,
-// //   Paper,
-// //   Typography,
-// // } from '@mui/material';
-// // import { axiosInstance } from 'src/api/api';
-
-// // export default function ShippingRecommendations() {
-// //   const [data, setData] = useState([]);
-// //   const [totalProducts, setTotalProducts] = useState(0);
-// //   const [rowsPerPage, setRowsPerPage] = useState(100); // Количество строк на страницу по умолчанию
-// //   const [page, setPage] = useState(0); // Текущая страница
-// //   const [loading, setLoading] = useState(true);
-// //   const [regions, setRegions] = useState([]); // Список филиалов
-
-// //   useEffect(() => {
-// //     const fetchData = async () => {
-// //       try {
-// //         const token = JSON.parse(localStorage.getItem('token')).access;
-// //         const idCompany = localStorage.getItem('selectedCompany');
-
-// //         const response = await axiosInstance.get(
-// //           `companies/${idCompany}/supplier/?page_size=${rowsPerPage}&page=${page + 1}`,
-// //           {
-// //             headers: {
-// //               Authorization: `Bearer ${token}`,
-// //             },
-// //           }
-// //         );
-
-// //         setData(response.data.results || []);
-// //         setTotalProducts(response.data.product_count || 0);
-
-// //         // Получаем уникальный список филиалов для заголовков
-// //         const uniqueRegions = [
-// //           ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name))),
-// //         ];
-// //         setRegions(uniqueRegions);
-
-// //         setLoading(false);
-// //         console.log(response.data);
-// //       } catch (err) {
-// //         console.error('Ошибка при получении данных:', err.message);
-// //       }
-// //     };
-
-// //     fetchData();
-// //   }, [rowsPerPage, page]);
-
-// //   const handleChangePage = (event, newPage) => {
-// //     setPage(newPage);
-// //   };
-
-// //   const handleChangeRowsPerPage = (event) => {
-// //     setRowsPerPage(parseInt(event.target.value, 10));
-// //     setPage(0); // Сбрасываем на первую страницу при изменении количества строк на странице
-// //   };
-
-// //   if (loading) {
-// //     return <p>Загрузка...</p>;
-// //   }
-
-// //   return (
-// //     <Paper>
-// //       <TableContainer style={{ overflowX: 'auto' }}>
-// //         <Table>
-// //           <TableHead>
-// //             <TableRow>
-// //               <TableCell rowSpan={2}>Артикул</TableCell>
-// //               {regions.map((region) => (
-// //                 <TableCell key={region} colSpan={2} align="center">
-// //                   {region}
-// //                 </TableCell>
-// //               ))}
-// //             </TableRow>
-// //             <TableRow>
-// //               {regions.map((region) => (
-// //                 <>
-// //                   <TableCell key={`${region}-quantity`} align="center">
-// //                     Количество
-// //                   </TableCell>
-// //                   <TableCell key={`${region}-days_left`} align="center">
-// //                     Осталось дней
-// //                   </TableCell>
-// //                 </>
-// //               ))}
-// //             </TableRow>
-// //           </TableHead>
-// //           <TableBody>
-// //             {data.map((row) => (
-// //               <TableRow key={row.product}>
-// //                 <TableCell>{row.product}</TableCell>
-// //                 {regions.map((region) => {
-// //                   const regionData = row.data.find((r) => r.region_name === region);
-// //                   return (
-// //                     <>
-// //                       <TableCell key={`${region}-quantity`} align="center">
-// //                         {regionData ? regionData.quantity : '0'}
-// //                       </TableCell>
-// //                       <TableCell key={`${region}-days_left`} align="center">
-// //                         {regionData ? regionData.days_left : '0'}
-// //                       </TableCell>
-// //                     </>
-// //                   );
-// //                 })}
-// //               </TableRow>
-// //             ))}
-// //           </TableBody>
-// //         </Table>
-// //       </TableContainer>
-
-// //       <TablePagination
-// //         rowsPerPageOptions={[100, 500, 1000]}
-// //         component="div"
-// //         count={totalProducts}
-// //         rowsPerPage={rowsPerPage}
-// //         page={page}
-// //         onPageChange={handleChangePage}
-// //         onRowsPerPageChange={handleChangeRowsPerPage}
-// //       />
-// //     </Paper>
-// //   );
-// // }
-
-
-// import React, { useEffect, useState } from 'react';
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableContainer,
-//   TableHead,
-//   TableRow,
-//   TablePagination,
-//   Paper,
-//   Typography,
-//   Button,
-// } from '@mui/material';
-// import { axiosInstance } from 'src/api/api';
-// import { BsCheck2 } from 'react-icons/bs';
-
-// export default function ShippingRecommendations() {
-//   const [data, setData] = useState([]);
-//   const [totalProducts, setTotalProducts] = useState(0);
-//   const [rowsPerPage, setRowsPerPage] = useState(100); // Количество строк на страницу по умолчанию
-//   const [page, setPage] = useState(0); // Текущая страница
-//   const [loading, setLoading] = useState(true);
-//   const [regions, setRegions] = useState([]); // Список филиалов
-
-
-
-// // const token = JSON.parse(localStorage.getItem('token')).access;
-// //         const idCompany = localStorage.getItem('selectedCompany');
-
-// //         const response = await axiosInstance.post(
-// //           `companies/${idCompany}/shipment/`,
-// //           {
-// //             headers: {
-// //               Authorization: `Bearer ${token}`,
-// //             },
-// //           }
-// //         );
-
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const token = JSON.parse(localStorage.getItem('token')).access;
-//         const idCompany = localStorage.getItem('selectedCompany');
-
-//         const response = await axiosInstance.get(
-//           `companies/${idCompany}/supplier/?page_size=${rowsPerPage}&page=${page + 1}`,
-//           {
-//             headers: {
-//               Authorization: `Bearer ${token}`,
-//             },
-//           }
-//         );
-
-//         setData(response.data.results || []);
-//         setTotalProducts(response.data.product_count || 0);
-
-//         // Получаем уникальный список филиалов для заголовков
-//         const uniqueRegions = [
-//           ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name))),
-//         ];
-//         setRegions(uniqueRegions);
-
-//         setLoading(false);
-//         console.log(response.data);
-//       } catch (err) {
-//         console.error('Ошибка при получении данных:', err.message);
-//       }
-//     };
-
-//     fetchData();
-//   }, [rowsPerPage, page]);
-
-//   const handleChangePage = (event, newPage) => {
-//     setPage(newPage);
-//   };
-
-//   const handleChangeRowsPerPage = (event) => {
-//     setRowsPerPage(parseInt(event.target.value, 10));
-//     setPage(0); // Сбрасываем на первую страницу при изменении количества строк на странице
-//   };
-
-//   if (loading) {
-//     return <p>Загрузка...</p>;
-//   }
-
-//   console.log(data);
-  
-
-//   return (
-//     <Paper>
-//       <TableContainer style={{ overflowX: 'auto' }}>
-//         <Table>
-//           <TableHead>
-//             <TableRow>
-//             <TableCell 
-//                 rowSpan={2} 
-//                 style={{
-//                   position: 'sticky',
-//                   left: 0,
-//                   backgroundColor: '#fff',
-//                   zIndex: 1,
-//                 }}
-//               >
-//                 Действия
-//               </TableCell>
-//               <TableCell 
-//                 rowSpan={2} 
-//                 style={{
-//                   position: 'sticky',
-//                   left: 0,
-//                   backgroundColor: '#fff',
-//                   zIndex: 1,
-//                 }}
-//               >
-//                 Артикул
-//               </TableCell>
-//               {regions.map((region) => (
-//                 <TableCell key={region} colSpan={2} align="center">
-//                   {region}
-//                 </TableCell>
-//               ))}
-//             </TableRow>
-//             <TableRow>
-//               {regions.map((region) => (
-//                 <>
-//                   <TableCell key={`${region}-quantity`} align="center">
-//                     Количество
-//                   </TableCell>
-//                   <TableCell key={`${region}-days_left`} align="center">
-//                     Осталось дней
-//                   </TableCell>
-//                 </>
-//               ))}
-//             </TableRow>
-//           </TableHead>
-//           <TableBody>
-//             {data.map((row) => (
-//               <TableRow key={row.product}>
-//                        <TableCell>
-//                     <Button
-//                       variant="contained"
-//                       color="warning"
-//                       onClick={() => handleSubmitProduction(row.id)}
-//                     >
-//                               <BsCheck2 />
-
-//                     </Button>
-//                   </TableCell>
-//                 <TableCell 
-//                   style={{
-//                     position: 'sticky',
-//                     left: 0,
-//                     backgroundColor: '#fff',
-//                     zIndex: 1,
-//                   }}
-//                 >
-//                   {row.product}
-//                 </TableCell>
-//                 {regions.map((region) => {
-//                   const regionData = row.data.find((r) => r.region_name === region);
-//                   return (
-//                     <>
-//                       <TableCell key={`${region}-quantity`} align="center">
-//                         {regionData ? regionData.quantity : '0'}
-//                       </TableCell>
-//                       <TableCell key={`${region}-days_left`} align="center">
-//                         {regionData ? regionData.days_left : '0'}
-//                       </TableCell>
-//                     </>
-//                   );
-//                 })}
-//               </TableRow>
-//             ))}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
-
-//       <TablePagination
-//         rowsPerPageOptions={[100, 500, 1000]}
-//         component="div"
-//         count={totalProducts}
-//         rowsPerPage={rowsPerPage}
-//         page={page}
-//         onPageChange={handleChangePage}
-//         onRowsPerPageChange={handleChangeRowsPerPage}
-//       />
-//     </Paper>
-//   );
-// }
-
-
 import React, { useEffect, useState } from 'react';
 import {
   Table,
@@ -465,51 +9,110 @@ import {
   TablePagination,
   Paper,
   Button,
+  CircularProgress,
+  Select,
+  MenuItem,
+  TextField,
 } from '@mui/material';
 import { axiosInstance } from 'src/api/api';
 import { BsCheck2 } from 'react-icons/bs';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+import { format } from 'date-fns';
 
 export default function ShippingRecommendations() {
   const [data, setData] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(100); // Количество строк на страницу по умолчанию
-  const [page, setPage] = useState(0); // Текущая страница
+  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [regions, setRegions] = useState([]); // Список филиалов
+  const [regions, setRegions] = useState([]);
+  const [services, setServices] = useState([]);
+  const [regionFilter, setRegionFilter] = useState('');
+  const [serviceFilter, setServiceFilter] = useState('');
+  const [productCodeFilter, setProductCodeFilter] = useState('');
+  const [sort, setSort] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // для общей отправки
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = JSON.parse(localStorage.getItem('token')).access;
-        const idCompany = localStorage.getItem('selectedCompany');
-
-        const response = await axiosInstance.get(
-          `companies/${idCompany}/supplier/?page_size=${rowsPerPage}&page=${page + 1}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setData(response.data.results || []);
-        setTotalProducts(response.data.product_count || 0);
-
-        // Получаем уникальный список филиалов для заголовков
-        const uniqueRegions = [
-          ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name))),
-        ];
-        setRegions(uniqueRegions);
-
-        setLoading(false);
-        console.log(response.data);
-      } catch (err) {
-        console.error('Ошибка при получении данных:', err.message);
-      }
-    };
-
     fetchData();
-  }, [rowsPerPage, page]);
+  }, [rowsPerPage, page, regionFilter, serviceFilter, productCodeFilter, sort]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const token = JSON.parse(localStorage.getItem('token')).access;
+  //       const idCompany = localStorage.getItem('selectedCompany');
+
+  //       const response = await axiosInstance.get(
+  //         `companies/${idCompany}/supplier/?page_size=${rowsPerPage}&page=${page + 1}`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+
+  //       setData(response.data.results || []);
+  //       setTotalProducts(response.data.product_count || 0);
+
+  //       // Получаем уникальный список филиалов для заголовков
+  //       const uniqueRegions = [
+  //         ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name))),
+  //       ];
+  //       setRegions(uniqueRegions);
+
+  //       setLoading(false);
+  //       console.log(response.data);
+  //     } catch (err) {
+  //       console.error('Ошибка при получении данных:', err.message);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [rowsPerPage, page]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const token = JSON.parse(localStorage.getItem('token')).access;
+      const idCompany = localStorage.getItem('selectedCompany');
+
+      const queryParams = new URLSearchParams({
+        page_size: rowsPerPage,
+        page: page + 1,
+        region_name: regionFilter || '',
+        service: serviceFilter || '',
+        product_code: productCodeFilter || '',
+        sort: sort || '',
+      }).toString();
+
+      const response = await axiosInstance.get(`companies/${idCompany}/supplier/?${queryParams}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setData(response.data.results || []);
+      setTotalProducts(response.data.product_count || 0);
+
+      const uniqueRegions = [
+        ...new Set(
+          response.data.results.flatMap((row) => row.data.map((region) => region.region_name))
+        ),
+      ];
+      setRegions(uniqueRegions);
+
+      const uniqueServices = ['wildberries', 'ozon', 'yandexmarket'];
+      setServices(uniqueServices);
+
+      setLoading(false);
+    } catch (err) {
+      console.error('Ошибка при получении данных:', err.message);
+      setLoading(false);
+    }
+  };
 
   const handleSubmitProduction = async (productId) => {
     try {
@@ -545,12 +148,171 @@ export default function ShippingRecommendations() {
     setPage(0); // Сбрасываем на первую страницу при изменении количества строк на странице
   };
 
+  const handleExportToExcel = async () => {
+    setIsExporting(true);
+    try {
+      const token = JSON.parse(localStorage.getItem('token')).access;
+      const idCompany = localStorage.getItem('selectedCompany');
+      const allData = [];
+
+      // Fetch all pages of data
+      const totalPages = Math.ceil(totalProducts / rowsPerPage);
+      for (let i = 0; i < totalPages; i++) {
+        const response = await axiosInstance.get(
+          `companies/${idCompany}/supplier/?page_size=${rowsPerPage}&page=${i + 1}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        allData.push(...response.data.results);
+      }
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Рекомендации по отгрузке');
+
+      worksheet.columns = [
+        { header: 'Артикул', key: 'product', width: 20 },
+        ...regions.flatMap((region) => [
+          { header: `${region} - Количество`, key: `${region}-quantity`, width: 15 },
+          { header: `${region} - Осталось дней`, key: `${region}-days_left`, width: 15 },
+        ]),
+      ];
+
+      allData.forEach((row) => {
+        const rowData = { product: row.product };
+        regions.forEach((region) => {
+          const regionData = row.data.find((r) => r.region_name === region);
+          rowData[`${region}-quantity`] = regionData ? regionData.quantity : 0;
+          rowData[`${region}-days_left`] = regionData ? regionData.days_left : 0;
+        });
+        worksheet.addRow(rowData);
+      });
+
+      worksheet.getRow(1).eachCell((cell) => {
+        cell.font = { bold: true };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const fileName = `Рекомендации_по_отгрузке_${format(new Date(), 'dd-MM-yyyy')}.xlsx`;
+      saveAs(new Blob([buffer]), fileName);
+    } catch (error) {
+      console.error('Ошибка при экспорте в Excel:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleSortChange = (event) => {
+    setSort(event.target.value);
+  };
+
+  const handleSubmitAllProducts = async () => {
+    setIsSubmitting(true);
+    try {
+      const token = JSON.parse(localStorage.getItem('token')).access;
+      const idCompany = localStorage.getItem('selectedCompany');
+
+      // Отправка всех данных
+      await axiosInstance.post(
+        `companies/${idCompany}/shipment/bulk/`,
+        { products: data }, // Отправляем все продукты
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('Все данные успешно отправлены');
+    } catch (error) {
+      console.error('Ошибка при отправке всех данных:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (loading) {
     return <p>Загрузка...</p>;
   }
 
   return (
     <Paper>
+      <div>
+        <div className="actions">
+          <Button
+            variant="contained"
+            color="inherit"
+            onClick={handleExportToExcel}
+            disabled={isExporting}
+            style={{ margin: '16px' }}
+          >
+            {isExporting ? <CircularProgress size={20} /> : 'Экспорт в Excel'}
+          </Button>
+
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmitAllProducts}
+            disabled={isSubmitting}
+            style={{ margin: '16px' }}
+          >
+            {isSubmitting ? <CircularProgress size={20} /> : 'Отправить все данные'}
+          </Button>
+        </div>
+
+        <div className="flex">
+          <TextField
+            variant="outlined"
+            placeholder="Поиск по артикулу"
+            value={productCodeFilter}
+            onChange={(e) => setProductCodeFilter(e.target.value)}
+            size="small"
+            fullWidth
+          />
+          <Select
+            value={regionFilter}
+            onChange={(e) => setRegionFilter(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Фильтр по региону' }}
+            sx={{ mb: 0, px: 2 }}
+          >
+            <MenuItem value="">Все регионы</MenuItem>
+            {regions.map((region) => (
+              <MenuItem key={region} value={region}>
+                {region}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            value={serviceFilter}
+            onChange={(e) => setServiceFilter(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Фильтр по сервису' }}
+            sx={{ mb: 0, px: 2 }}
+          >
+            <MenuItem value="">Все сервисы</MenuItem>
+            {services.map((service) => (
+              <MenuItem key={service} value={service}>
+                {service}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            value={sort}
+            onChange={handleSortChange}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Сортировка' }}
+            sx={{ mb: 0, px: 2 }}
+          >
+            <MenuItem value="">Без сортировки</MenuItem>
+            <MenuItem value="1">По возрастанию</MenuItem>
+            <MenuItem value="-1">По убыванию</MenuItem>
+          </Select>
+        </div>
+      </div>
+
       <TableContainer style={{ overflowX: 'auto' }}>
         <Table>
           <TableHead>
