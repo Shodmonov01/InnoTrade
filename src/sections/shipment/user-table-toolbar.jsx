@@ -18,6 +18,7 @@ export default function UserTableToolbar({
   endDate,
   onStartDateChange,
   onEndDateChange,
+  onExportExcel,
 }) {
   // Функции для управления изменениями дат
   const handleStartDateChange = (event) => {
@@ -98,6 +99,11 @@ export default function UserTableToolbar({
       <Button variant="contained" color="warning">
         Отгрузить
       </Button>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <Button variant="contained" color="warning" onClick={onExportExcel}>
+          Экспорт в Excel
+        </Button>
+      </div>
     </Toolbar>
   );
 }
@@ -110,4 +116,5 @@ UserTableToolbar.propTypes = {
   endDate: PropTypes.instanceOf(Date),
   onStartDateChange: PropTypes.func,
   onEndDateChange: PropTypes.func,
+  onExportExcel: PropTypes.func, 
 };

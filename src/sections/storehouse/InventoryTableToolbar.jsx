@@ -34,6 +34,7 @@ export default function InventoryTableToolbar({
   endDate,
   onStartDateChange,
   onEndDateChange,
+  onExportExcel
 }) {
   const [open, setOpen] = useState(false); // Для открытия и закрытия модального окна
   const [productID, setProductID] = useState(''); // Поле для ввода ID продукта
@@ -113,6 +114,9 @@ export default function InventoryTableToolbar({
             />
           )}
         </div>
+        <Button variant="contained" onClick={onExportExcel}> {/* Call the export function */}
+        Export to Excel
+      </Button>
 
         {/* <div style={{ display: 'flex', gap: '8px' }} className="border rounded-lg p-3.5">
           <input

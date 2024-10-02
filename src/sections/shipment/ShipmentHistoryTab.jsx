@@ -176,9 +176,13 @@ import {
   TableRow,
   TablePagination,
   Card,
+  Button,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { axiosInstance } from 'src/api/api';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+import { format } from 'date-fns'; // to format dates if needed
 
 export default function ShipmentHistoryTab() {
   const [page, setPage] = useState(0);
@@ -228,8 +232,35 @@ export default function ShipmentHistoryTab() {
     ? Array.from(new Set(data.flatMap(row => Object.keys(row.data)))).sort((a, b) => new Date(b) - new Date(a))
     : [];
 
+
+    const handleExcelExport = async () => {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Shipment History');
+  
+      // Adding headers
+      worksheet.addRow(['Артикул', ...uniqueDates]);
+  
+      // Adding data rows
+      data.forEach((row) => {
+        const rowData = [row.product];
+        uniqueDates.forEach((date) => {
+          rowData.push(row.data[date] || 0); // Push the data for each date
+        });
+        worksheet.addRow(rowData);
+      });
+  
+      // Generate Excel file and save it
+      const buffer = await workbook.xlsx.writeBuffer();
+      saveAs(new Blob([buffer]), `ShipmentHistory_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+    };
+
   return (
     <Card>
+      <div>
+      <Button variant="contained" color="primary" onClick={handleExcelExport}>
+        Export to Excel
+      </Button>
+      </div>
       <TableContainer>
         <Table>
           <TableHead>

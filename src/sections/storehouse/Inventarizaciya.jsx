@@ -528,6 +528,8 @@ import {
   Chip,
 } from '@mui/material';
 import InventoryTableToolbar from './InventoryTableToolbar';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 const Inventarizaciya = () => {
   const [data, setData] = useState([]);
@@ -588,6 +590,30 @@ const Inventarizaciya = () => {
     return Object.values(groupedData);
   };
 
+  const handleExportExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Inventory');
+
+    // Add header row
+    worksheet.addRow(['Код товара', 'Местоположение', 'Количество', 'Итого', 'Итого фактически']);
+
+    // Add data rows
+    groupedData.forEach(row => {
+      worksheet.addRow([
+        row.product.vendor_code,
+        row.shelfs.join(', '),
+        row.total,
+        row.total,
+        row.total_fact,
+      ]);
+    });
+
+    // Export the Excel file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'inventory.xlsx');
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
@@ -595,7 +621,9 @@ const Inventarizaciya = () => {
 
   return (
     <div>
-      <InventoryTableToolbar />
+      <InventoryTableToolbar 
+       onExportExcel={handleExportExcel}
+      />
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

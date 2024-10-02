@@ -135,10 +135,10 @@ export default function ShipmentView() {
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Отгрузки</Typography>
-
+{/* 
         <Button variant="contained" color="inherit" startIcon={<PiMicrosoftExcelLogo />}>
           Экспорт в EXCEL
-        </Button>
+        </Button> */}
       </Stack>
 
       <Card className="p-4 flex gap-4 mb-5">
