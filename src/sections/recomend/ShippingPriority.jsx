@@ -184,7 +184,8 @@ export default function ShippingPriority() {
 
   return (
     <>
-      <Button
+<div className='m-3'>
+<Button
         variant="contained"
         color="inherit"
         startIcon={isExporting ? <CircularProgress size={20} /> : <PiMicrosoftExcelLogo />}
@@ -193,6 +194,7 @@ export default function ShippingPriority() {
       >
         {isExporting ? 'Загрузка...' : 'Экспорт в Excel'}
       </Button>
+</div>
       
       <TableContainer component={Paper}>
         <Table>

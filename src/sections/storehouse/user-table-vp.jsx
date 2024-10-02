@@ -113,7 +113,6 @@
 // //   onEndDateChange: PropTypes.func,
 // // };
 
-
 // import PropTypes from 'prop-types';
 // import React from 'react';
 // import Toolbar from '@mui/material/Toolbar';
@@ -195,9 +194,8 @@
 //   onSubmitAllProduction: PropTypes.func.isRequired, // Указываем, что передача функции обязательна
 // };
 
-
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -205,7 +203,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import Tooltip from '@mui/material/Tooltip';
 import Iconify from 'src/components/iconify';
-import { Button } from '@mui/material';
+import { Button, MenuItem, Select } from '@mui/material';
 import { BsCheck2All } from 'react-icons/bs';
 
 export default function UserTableVP({
@@ -213,8 +211,18 @@ export default function UserTableVP({
   filterName,
   onFilterName,
   onSubmitAllProduction,
-  onSearch, // Новый пропс для обработки поиска
+  onSortChange,
+  sort // Новый пропс для изменения сортировки
 }) {
+  const [sortField, setSortField] = useState('product'); // Поле сортировки
+  const [sortDirection, setSortDirection] = useState('asc'); // Направление сортировки
+
+  const handleSortChange = () => {
+    const newDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    setSortDirection(newDirection);
+    onSortChange(sortField, newDirection);
+  };
+
   return (
     <Toolbar
       sx={{
@@ -229,45 +237,37 @@ export default function UserTableVP({
       }}
     >
       <div>
-  
-          <>
-            <OutlinedInput
-              value={filterName}
-              onChange={onFilterName}
-              placeholder="Поиск"
-              startAdornment={
-                <InputAdornment position="start">
-                  <Iconify
-                    icon="eva:search-fill"
-                    sx={{ color: 'text.disabled', width: 20, height: 20 }}
-                  />
-                </InputAdornment>
-              }
-            />
-            {/* Добавляем кнопку поиска */}
-            {/* <Button variant="contained" color="primary" onClick={onSearch}>
-              Поиск
-            </Button> */}
-          </>
-        
+        <OutlinedInput
+          value={filterName}
+          onChange={onFilterName}
+          placeholder="Поиск"
+          startAdornment={
+            <InputAdornment position="start">
+              <Iconify
+                icon="eva:search-fill"
+                sx={{ color: 'text.disabled', width: 20, height: 20 }}
+              />
+            </InputAdornment>
+          }
+        />
+        {/* Сортировка по продуктам */}
+        {/* <Select
+          value={sort}
+          onChange={(e) => handleSortChange(e.target.value)} // Обработчик изменения сортировки
+          displayEmpty
+          inputProps={{ 'aria-label': 'Sort' }}
+          sx={{ mb: 0, px: 2 }}
+        >
+          <MenuItem value="">Без сортировки</MenuItem>
+          <MenuItem value="1">Больше продаж</MenuItem>
+          <MenuItem value="-1">Меньше продаж</MenuItem>
+          <MenuItem value="A-Z">От A до Z</MenuItem>
+          <MenuItem value="Z-A">От Z до A</MenuItem>
+        </Select> */}
       </div>
-
-      <div className='mr-20'>
-        {/* {numSelected > 0 ? (
-          <Tooltip title="Delete">
-            <IconButton>
-              <Iconify icon="eva:trash-2-fill" />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip title="Filter list">
-            <IconButton>
-              <Iconify icon="ic:round-filter-list" />
-            </IconButton>
-          </Tooltip>
-        )} */}
+      <div>
         <Button variant="contained" color="primary" onClick={onSubmitAllProduction}>
-        <BsCheck2All />
+          <BsCheck2All />
         </Button>
       </div>
     </Toolbar>

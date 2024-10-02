@@ -348,6 +348,7 @@ export default function ProductionRecommendations() {
   const [sort, setSort] = useState('');
   const [filterTimeout, setFilterTimeout] = useState(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const fetchData = async (pageNumber = page + 1) => {
     setIsLoading(true);

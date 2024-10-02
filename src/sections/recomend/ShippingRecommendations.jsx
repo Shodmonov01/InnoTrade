@@ -19,6 +19,7 @@ import { BsCheck2 } from 'react-icons/bs';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { format } from 'date-fns';
+import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 
 export default function ShippingRecommendations() {
   const [data, setData] = useState([]);
@@ -239,9 +240,9 @@ export default function ShippingRecommendations() {
 
   return (
     <Paper>
-      <div>
-        <div className="actions">
-          <Button
+      <div className='mx-3'>
+        <div className="actions ">
+          {/* <Button
             variant="contained"
             color="inherit"
             onClick={handleExportToExcel}
@@ -249,7 +250,17 @@ export default function ShippingRecommendations() {
             style={{ margin: '16px' }}
           >
             {isExporting ? <CircularProgress size={20} /> : 'Экспорт в Excel'}
-          </Button>
+          </Button> */}
+          <Button
+          variant="contained"
+          color="inherit"
+
+          startIcon={isExporting ? <CircularProgress size={20} /> : <PiMicrosoftExcelLogo />}
+          onClick={handleExportToExcel}
+          disabled={isExporting}
+        >
+          {isExporting ? 'Загрузка...' : 'Экспорт в Excel'}
+        </Button>
 
           <Button
             variant="contained"
@@ -260,17 +271,19 @@ export default function ShippingRecommendations() {
           >
             {isSubmitting ? <CircularProgress size={20} /> : 'Отправить все данные'}
           </Button>
-        </div>
-
-        <div className="flex">
           <TextField
+          sx={{ mb: 0, p: 2 }}
             variant="outlined"
             placeholder="Поиск по артикулу"
             value={productCodeFilter}
             onChange={(e) => setProductCodeFilter(e.target.value)}
             size="small"
-            fullWidth
+            
           />
+        </div>
+
+        <div className="flex gap-8">
+
           <Select
             value={regionFilter}
             onChange={(e) => setRegionFilter(e.target.value)}
@@ -395,7 +408,7 @@ export default function ShippingRecommendations() {
                         {regionData ? regionData.quantity : '0'}
                       </TableCell>
                       <TableCell key={`${region}-days_left`} align="center">
-                        {regionData ? regionData.days_left : '0'}
+                        {regionData ? regionData.days_left : ' '}
                       </TableCell>
                     </>
                   );
