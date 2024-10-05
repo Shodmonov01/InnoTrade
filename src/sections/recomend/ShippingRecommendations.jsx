@@ -35,6 +35,7 @@ export default function ShippingRecommendations() {
   const [sort, setSort] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false); // для общей отправки
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -213,24 +214,44 @@ export default function ShippingRecommendations() {
   const handleSubmitAllProducts = async () => {
     setIsSubmitting(true);
     try {
-      const token = JSON.parse(localStorage.getItem('token')).access;
-      const idCompany = localStorage.getItem('selectedCompany');
-
-      // Отправка всех данных
-      await axiosInstance.post(
-        `companies/${idCompany}/shipment/bulk/`,
-        { products: data }, // Отправляем все продукты
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      // Здесь создаем массив промисов для отправки каждого продукта
+      const submitPromises = data.map((product) =>
+        handleSubmitProduction(product.id) // отправляем ID продукта
       );
+  
+      // Ожидаем завершения всех промисов
+      await Promise.all(submitPromises);
+  
       console.log('Все данные успешно отправлены');
+      // Вы можете показать уведомление об успешной отправке или обновить интерфейс
     } catch (error) {
       console.error('Ошибка при отправке всех данных:', error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+  
+
+  const handleCalculateClick = async () => {
+    setIsLoading(true);
+    try {
+      const token = JSON.parse(localStorage.getItem('token')).access;
+      const idCompany = localStorage.getItem('selectedCompany');
+      const url = `/companies/${idCompany}/calculate-supplier/`;
+
+      console.log('Fetching data from URL:', url);
+      const response = await axiosInstance.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Показать уведомление об успешном начале расчёта
+      setAlertOpen(true);
+    } catch (error) {
+      console.error('Error fetching data:', error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -240,7 +261,7 @@ export default function ShippingRecommendations() {
 
   return (
     <Paper>
-      <div className='mx-3'>
+      <div className="mx-3">
         <div className="actions ">
           {/* <Button
             variant="contained"
@@ -252,15 +273,14 @@ export default function ShippingRecommendations() {
             {isExporting ? <CircularProgress size={20} /> : 'Экспорт в Excel'}
           </Button> */}
           <Button
-          variant="contained"
-          color="inherit"
-
-          startIcon={isExporting ? <CircularProgress size={20} /> : <PiMicrosoftExcelLogo />}
-          onClick={handleExportToExcel}
-          disabled={isExporting}
-        >
-          {isExporting ? 'Загрузка...' : 'Экспорт в Excel'}
-        </Button>
+            variant="contained"
+            color="inherit"
+            startIcon={isExporting ? <CircularProgress size={20} /> : <PiMicrosoftExcelLogo />}
+            onClick={handleExportToExcel}
+            disabled={isExporting}
+          >
+            {isExporting ? 'Загрузка...' : 'Экспорт в Excel'}
+          </Button>
 
           <Button
             variant="contained"
@@ -272,18 +292,25 @@ export default function ShippingRecommendations() {
             {isSubmitting ? <CircularProgress size={20} /> : 'Отправить все данные'}
           </Button>
           <TextField
-          sx={{ mb: 0, p: 2 }}
+            sx={{ mb: 0, p: 2 }}
             variant="outlined"
             placeholder="Поиск по артикулу"
             value={productCodeFilter}
             onChange={(e) => setProductCodeFilter(e.target.value)}
             size="small"
-            
           />
+
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCalculateClick}
+            disabled={isLoading} // Отключаем кнопку во время загрузки
+          >
+            {isLoading ? 'Подсчёт...' : 'Подсчёт'}
+          </Button>
         </div>
 
         <div className="flex gap-8">
-
           <Select
             value={regionFilter}
             onChange={(e) => setRegionFilter(e.target.value)}

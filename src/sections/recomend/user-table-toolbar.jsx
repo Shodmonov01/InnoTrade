@@ -8,9 +8,12 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  OutlinedInput,
+  InputAdornment,
 } from '@mui/material';
 import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 import { BsCheck2All } from 'react-icons/bs';
+import Iconify from 'src/components/iconify';
 
 export default function UserTableToolbar({
   numSelected,
@@ -19,53 +22,47 @@ export default function UserTableToolbar({
   onSubmitAllProduction,
   sort,
   setSort,
-  onExport,   
-  isExporting
+  onExport,
+  isExporting,
+  handleCalculateClick,
+  isLoading,
 }) {
-  
-
   const handleSortChange = (event) => {
     setSort(event.target.value); // Call setSort passed from parent
   };
   return (
-    <Toolbar>
-      <Grid container spacing={2} alignItems="center" >
-     <Grid item>
-          {/* <Button
-            variant="contained"
-            color="primary"
-            onClick={onExport} // Обработчик для экспорта в Excel
-          >
-            Экспорт в Excel
-          </Button> */}
-                  <Button
-          variant="contained"
-          color="inherit"
-
-          startIcon={isExporting ? <CircularProgress size={20} /> : <PiMicrosoftExcelLogo />}
-          onClick={onExport}
-          disabled={isExporting}
-        >
-          {isExporting ? 'Загрузка...' : 'Экспорт в Excel'}
-        </Button>
-        </Grid>
-        <Grid item xs>
-          <TextField
-            variant="outlined"
-            placeholder="Поиск"
-            value={filterName}
-            onChange={onFilterName}
-            size="small"
-            fullWidthпо
-          />
-        </Grid>
-        <Grid item>
-        <Select
+    <Toolbar className="my-5 flex justify-between">
+    
+      <Button
+        variant="contained"
+        color="inherit"
+        startIcon={isExporting ? <CircularProgress size={20} /> : <PiMicrosoftExcelLogo />}
+        onClick={onExport}
+        disabled={isExporting}
+        sx={{ padding: '15px 26px' }}
+      >
+        {isExporting ? 'Загрузка...' : 'Экспорт в Excel'}
+      </Button>
+      
+      <OutlinedInput
+        value={filterName}
+        onChange={onFilterName}
+        placeholder="Поиск"
+        startAdornment={
+          <InputAdornment position="start" sx={{ mb: 0, px: 1 }}>
+            <Iconify
+              icon="eva:search-fill"
+              sx={{ color: 'text.disabled', width: 20, height: 20 }}
+            />
+          </InputAdornment>
+        }
+      />
+      <Select
         value={sort}
         onChange={handleSortChange} // Call the new function
         displayEmpty
         inputProps={{ 'aria-label': 'Sort' }}
-        sx={{ mb: 0, px: 3}}
+        sx={{ mb: 0, px: 3 }}
       >
         <MenuItem value="">Без сортировки</MenuItem>
         <MenuItem value="1">Больше продаж</MenuItem>
@@ -73,20 +70,26 @@ export default function UserTableToolbar({
         <MenuItem value="A-Z">От A до Z</MenuItem>
         <MenuItem value="Z-A">От Z до A</MenuItem>
       </Select>
-        </Grid>
 
-        <Grid item>
-          <Button
-            variant="contained"
-            // color="contained"
-            onClick={onSubmitAllProduction}
-            // disabled={numSelected === 0}
-          >
-            <BsCheck2All />
-          </Button>
-        </Grid>
-        
-      </Grid>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleCalculateClick}
+        disabled={isLoading} // Отключаем кнопку во время загрузки
+        sx={{ padding: '15px 26px' }}
+      >
+        {isLoading ? 'Подсчёт...' : 'Подсчёт'}
+      </Button>
+
+      <Button
+        variant="contained"
+        // color="contained"
+        onClick={onSubmitAllProduction}
+        // disabled={numSelected === 0}
+        sx={{ padding: '15px 26px' }}
+      >
+        <BsCheck2All size={24} />
+      </Button>
     </Toolbar>
   );
 }

@@ -341,6 +341,7 @@ import {
   Button,
   Alert,
   Snackbar,
+  Card,
 } from '@mui/material';
 import React, { Suspense } from 'react';
 import { axiosInstance } from 'src/api/api';
@@ -392,24 +393,27 @@ export default function RecomendView() {
 
   return (
     <Container>
-      <div className="flex justify-between">
+      <div className="flex justify-between mb-10">
         <Typography variant="h4">Рекомендации</Typography>
 
-        <Button
+        {/* <Button
           variant="contained"
           color="primary"
           onClick={handleCalculateClick}
           disabled={isLoading} // Отключаем кнопку во время загрузки
         >
           {isLoading ? 'Подсчёт...' : 'Подсчёт'}
-        </Button>
+        </Button> */}
       </div>
 
-      <Tabs value={currentTab} onChange={handleChange}>
+     <Card className='p-3'>
+
+     <Tabs value={currentTab} onChange={handleChange}>
         <Tab label="Рекомендации производства" />
         <Tab label="Рекомендации отгрузок" />
         <Tab label="Приоритет отгрузок" />
       </Tabs>
+     </Card>
 
       {/* Используем Suspense для отображения индикатора загрузки */}
       {currentTab === 0 && (

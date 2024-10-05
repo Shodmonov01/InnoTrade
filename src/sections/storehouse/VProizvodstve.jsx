@@ -522,6 +522,7 @@ import {
   Paper,
   Select,
   MenuItem,
+  TablePagination,
 } from '@mui/material';
 import { axiosInstance } from 'src/api/api';
 import UserTableVP from './user-table-vp';
@@ -538,43 +539,95 @@ const VProizvodstve = () => {
   const [filterName, setFilterName] = useState('');
   const [sort, setSort] = useState('');
 
+  const [page, setPage] = useState(1);
+const [totalPages, setTotalPages] = useState(1); // Сохраняем общее количество страниц
+const [perPage, setPerPage] = useState(10); // Количество элементов на странице
+
+const fetchData = async (currentPage = 1) => {
+  try {
+    const token = JSON.parse(localStorage.getItem('token')).access;
+    const idCompany = localStorage.getItem('selectedCompany');
+    let url = `companies/${idCompany}/prodcution/?page=${currentPage}&per_page=${perPage}`;
+
+    if (sort) {
+      url += `&sort=${sort}`;
+    }
+
+    const response = await axiosInstance.get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setData(response.data.results);
+    setTotalPages(response.data.total_pages); // Устанавливаем общее количество страниц
+
+    // Инициализация значений для производства
+    const initialProductionValues = response.data.results.reduce((acc, row) => {
+      acc[row.id] = row.produced || '';
+      return acc;
+    }, {});
+    setProductionValues(initialProductionValues);
+
+    setLoading(false);
+  } catch (err) {
+    setError(err.message);
+    setLoading(false);
+  }
+};
+
+
+
+// Эффект для загрузки данных с учётом пагинации
+useEffect(() => {
+  fetchData(page); // Передаем текущую страницу
+}, [sort, page, perPage]);
+
+
+
+
   // Обработчик изменения сортировки
   const handleSortChange = (value) => {
     setSort(value); // Устанавливаем новое значение сортировки
   };
 
-  // Функция для получения данных с сервера
-  const fetchData = async () => {
-    try {
-      const token = JSON.parse(localStorage.getItem('token')).access;
-      const idCompany = localStorage.getItem('selectedCompany');
-      let url = `companies/${idCompany}/prodcution/?`;
 
-      if (sort) {
-        url += `&sort=${sort}`;
-      }
-
-      const response = await axiosInstance.get(url, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setData(response.data.results);
-
-      // Инициализация значений для производства
-      const initialProductionValues = response.data.results.reduce((acc, row) => {
-        acc[row.id] = row.produced || '';
-        return acc;
-      }, {});
-      setProductionValues(initialProductionValues);
-
-      setLoading(false);
-    } catch (err) {
-      setError(err.message);
-      setLoading(false);
-    }
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage); // Обновляем текущую страницу
   };
+  
+  // Функция для получения данных с сервера
+  // const fetchData = async () => {
+  //   try {
+  //     const token = JSON.parse(localStorage.getItem('token')).access;
+  //     const idCompany = localStorage.getItem('selectedCompany');
+  //     let url = `companies/${idCompany}/prodcution/?`;
+
+  //     if (sort) {
+  //       url += `&sort=${sort}`;
+  //     }
+
+  //     const response = await axiosInstance.get(url, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     setData(response.data.results);
+
+  //     // Инициализация значений для производства
+  //     const initialProductionValues = response.data.results.reduce((acc, row) => {
+  //       acc[row.id] = row.produced || '';
+  //       return acc;
+  //     }, {});
+  //     setProductionValues(initialProductionValues);
+
+  //     setLoading(false);
+  //   } catch (err) {
+  //     setError(err.message);
+  //     setLoading(false);
+  //   }
+  // };
 
   // Эффект для загрузки данных и сортировки
   useEffect(() => {
@@ -615,24 +668,78 @@ const VProizvodstve = () => {
   };
 
   // Отправка данных для всех изменений
+  // const handleSubmitAllProduction = async () => {
+  //   try {
+  //     const token = JSON.parse(localStorage.getItem('token')).access;
+  //     const filteredProductionValues = Object.keys(productionValues)
+  //       .filter((id) => productionValues[id] && productionValues[id] > 0)
+  //       .map((id) => ({
+  //         id,
+  //         value: productionValues[id] || data.find((row) => row.id === id)?.manufacture,
+  //       }));
+
+  //     if (filteredProductionValues.length === 0) {
+  //       console.log('Нет данных для отправки');
+  //       return;
+  //     }
+
+  //     const requests = filteredProductionValues.map(({ id, value }) =>
+  //       axiosInstance.patch(
+  //         `companies/${id}/update-prodcution/`,
+  //         {
+  //           produced: Number(value),
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       )
+  //     );
+
+  //     await Promise.all(requests);
+  //     console.log('Успешно отправлены данные для всех значений');
+  //     setProductionValues({});
+  //   } catch (error) {
+  //     console.error('Ошибка при отправке данных:', error);
+  //   }
+  // };
+  
   const handleSubmitAllProduction = async () => {
     try {
       const token = JSON.parse(localStorage.getItem('token')).access;
-      const filteredProductionValues = Object.keys(productionValues)
-        .filter((id) => productionValues[id] && productionValues[id] > 0)
-        .map((id) => ({
-          id,
-          value: productionValues[id] || data.find((row) => row.id === id)?.manufacture,
+      const idCompany = localStorage.getItem('selectedCompany');
+      let allProductionValues = [];
+  
+      // Собираем данные со всех страниц
+      for (let i = 1; i <= totalPages; i++) {
+        const response = await axiosInstance.get(
+          `companies/${idCompany}/production/?page=${i}&per_page=${perPage}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        const pageValues = response.data.results.map((row) => ({
+          id: row.id,
+          value: productionValues[row.id] || row.manufacture, // Убедитесь, что поле `manufacture` существует
         }));
-
+  
+        allProductionValues = [...allProductionValues, ...pageValues];
+      }
+  
+      const filteredProductionValues = allProductionValues.filter(({ value }) => value > 0);
+  
       if (filteredProductionValues.length === 0) {
         console.log('Нет данных для отправки');
         return;
       }
-
+  
       const requests = filteredProductionValues.map(({ id, value }) =>
         axiosInstance.patch(
-          `companies/${id}/update-prodcution/`,
+          `companies/${idCompany}/update-production/`, // Исправлен путь
           {
             produced: Number(value),
           },
@@ -643,14 +750,14 @@ const VProizvodstve = () => {
           }
         )
       );
-
+  
       await Promise.all(requests);
       console.log('Успешно отправлены данные для всех значений');
-      setProductionValues({});
     } catch (error) {
       console.error('Ошибка при отправке данных:', error);
     }
   };
+  
 
   // Обработка фильтрации по имени продукта
   const handleSearch = (event) => {
@@ -749,6 +856,15 @@ const VProizvodstve = () => {
             ))}
           </TableBody>
         </Table>
+        <TablePagination
+  component="div"
+  count={totalPages * perPage}
+  page={page - 1}
+  onPageChange={handleChangePage}
+  rowsPerPage={perPage}
+  onRowsPerPageChange={(event) => setPerPage(parseInt(event.target.value, 10))}
+  rowsPerPageOptions={[10, 12, 20]}
+/>
       </TableContainer>
     </div>
   );

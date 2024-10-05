@@ -93,6 +93,7 @@ export default function ShippingPriority() {
   const [error, setError] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
 
+
   // Fetch data from the API
   const fetchData = async () => {
     setIsLoading(true);
@@ -179,12 +180,36 @@ export default function ShippingPriority() {
     }
   };
 
+  const handleCalculateClick = async () => {
+    setIsLoading(true);
+    try {
+      const token = JSON.parse(localStorage.getItem('token')).access;
+      const idCompany = localStorage.getItem('selectedCompany');
+      const url = `/companies/${idCompany}/calculate-priority/`;
+
+
+      console.log("Fetching data from URL:", url);
+      const response = await axiosInstance.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Показать уведомление об успешном начале расчёта
+      setAlertOpen(true);
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (isLoading) return <p>Загрузка...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <>
-<div className='m-3'>
+<div className='m-3 flex gap-3'>
 <Button
         variant="contained"
         color="inherit"
@@ -194,6 +219,15 @@ export default function ShippingPriority() {
       >
         {isExporting ? 'Загрузка...' : 'Экспорт в Excel'}
       </Button>
+
+      <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCalculateClick}
+          disabled={isLoading} // Отключаем кнопку во время загрузки
+        >
+          {isLoading ? 'Подсчёт...' : 'Подсчёт'}
+        </Button>
 </div>
       
       <TableContainer component={Paper}>

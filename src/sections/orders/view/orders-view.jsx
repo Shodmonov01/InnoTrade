@@ -45,7 +45,7 @@ export default function ProductsView() {
   const [isExporting, setIsExporting] = useState(false);
   const [sort, setSort] = useState('');
   const [totalProducts, setTotalProducts] = useState(0);
-  
+
   const fetchRoles = async () => {
     setIsLoading(true); // Начало загрузки
     try {
@@ -54,7 +54,9 @@ export default function ProductsView() {
       const selectedTab = tabs.find((tab) => tab.label === currentTab);
       const serviceParam = selectedTab?.service ? `&service=${selectedTab.service}` : '';
 
-      let url = `/companies/${idCompany}/orders/?page_size=${rowsPerPage}&page=${page + 1}${serviceParam}`;
+      let url = `/companies/${idCompany}/orders/?page_size=${rowsPerPage}&page=${
+        page + 1
+      }${serviceParam}`;
 
       if (startDate && endDate) {
         const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
@@ -88,7 +90,7 @@ export default function ProductsView() {
       setIsLoading(false); // Завершение загрузки
     }
   };
-  
+
   useEffect(() => {
     fetchRoles();
   }, [currentTab, page, rowsPerPage]);
@@ -187,21 +189,21 @@ export default function ProductsView() {
           {isExporting ? 'Загрузка...' : 'Экспорт в Excel'}
         </Button>
       </Stack>
-
-      <Tabs
-        value={currentTab}
-        onChange={handleTabChange}
-        indicatorColor="primary"
-        textColor="primary"
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-      >
-        {tabs.map((tab) => (
-          <Tab key={tab.label} label={tab.label} value={tab.label} />
-        ))}
-      </Tabs>
-
+      <Card className="px-6 my-4 py-3">
+        <Tabs
+          value={currentTab}
+          onChange={handleTabChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+        >
+          {tabs.map((tab) => (
+            <Tab key={tab.label} label={tab.label} value={tab.label} />
+          ))}
+        </Tabs>
+      </Card>
       {isLoading ? (
         <Typography variant="h6" align="center">
           Загрузка данных...
@@ -258,7 +260,7 @@ export default function ProductsView() {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
-            </Card>
+          </Card>
         </>
       )}
     </Container>
