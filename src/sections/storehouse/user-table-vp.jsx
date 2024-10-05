@@ -205,6 +205,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Iconify from 'src/components/iconify';
 import { Button, MenuItem, Select } from '@mui/material';
 import { BsCheck2All } from 'react-icons/bs';
+import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 
 export default function UserTableVP({
   numSelected,
@@ -212,7 +213,8 @@ export default function UserTableVP({
   onFilterName,
   onSubmitAllProduction,
   onSortChange,
-  sort // Новый пропс для изменения сортировки
+  sort,
+  handleExportToExcel,
 }) {
   const [sortField, setSortField] = useState('product'); // Поле сортировки
   const [sortDirection, setSortDirection] = useState('asc'); // Направление сортировки
@@ -250,26 +252,39 @@ export default function UserTableVP({
             </InputAdornment>
           }
         />
-        {/* Сортировка по продуктам */}
-        {/* <Select
-          value={sort}
-          onChange={(e) => handleSortChange(e.target.value)} // Обработчик изменения сортировки
-          displayEmpty
-          inputProps={{ 'aria-label': 'Sort' }}
-          sx={{ mb: 0, px: 2 }}
-        >
-          <MenuItem value="">Без сортировки</MenuItem>
-          <MenuItem value="1">Больше продаж</MenuItem>
-          <MenuItem value="-1">Меньше продаж</MenuItem>
-          <MenuItem value="A-Z">От A до Z</MenuItem>
-          <MenuItem value="Z-A">От Z до A</MenuItem>
-        </Select> */}
       </div>
-      <div>
-        <Button variant="contained" color="primary" onClick={onSubmitAllProduction}>
-          <BsCheck2All />
-        </Button>
-      </div>
+
+      <Select
+        value={sort} // Controlled select for sorting
+        onChange={(e) => onSortChange(e.target.value)} // Handle sort change
+        displayEmpty
+        inputProps={{ 'aria-label': 'Sort' }}
+      >
+        <MenuItem value="">Без сортировки</MenuItem>
+        <MenuItem value="1">Больше продаж</MenuItem>
+        <MenuItem value="-1">Меньше продаж</MenuItem>
+        <MenuItem value="A-Z">От A до Z</MenuItem>
+        <MenuItem value="Z-A">От Z до A</MenuItem>
+      </Select>
+
+      <Button
+        variant="contained"
+        color="inherit"
+        onClick={handleExportToExcel}
+        startIcon={<PiMicrosoftExcelLogo />}
+        sx={{ padding: '15px 26px' }}
+      >
+        Экспорт в Excel
+      </Button>
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={onSubmitAllProduction}
+        sx={{ padding: '18px 26px' }}
+      >
+        <BsCheck2All />
+      </Button>
     </Toolbar>
   );
 }

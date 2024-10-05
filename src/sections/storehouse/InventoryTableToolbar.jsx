@@ -12,6 +12,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Iconify from 'src/components/iconify';
 import { axiosInstance } from 'src/api/api'; // убедитесь, что правильно настроен axiosInstance
+import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 
 // Стили для модального окна
 const style = {
@@ -114,7 +115,13 @@ export default function InventoryTableToolbar({
             />
           )}
         </div>
-        <Button variant="contained" onClick={onExportExcel}> {/* Call the export function */}
+        <Button variant="contained" onClick={onExportExcel}
+        startIcon={<PiMicrosoftExcelLogo />}
+        color="inherit"
+
+        sx={{ padding: '15px 26px' }}
+        
+        > 
         Export to Excel
       </Button>
 
@@ -130,7 +137,9 @@ export default function InventoryTableToolbar({
           />
         </div> */}
 
-        <Button variant="contained" onClick={handleOpen}>
+        <Button variant="contained" onClick={handleOpen} 
+        sx={{ padding: '15px 26px' }}
+        >
           Добавить Товар
         </Button>
       </Toolbar>

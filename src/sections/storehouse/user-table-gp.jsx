@@ -31,7 +31,7 @@
 // //       }}
 // //     >
 // //       <div>
-  
+
 // //           <>
 // //             <OutlinedInput
 // //               value={filterName}
@@ -46,7 +46,7 @@
 // //                 </InputAdornment>
 // //               }
 // //             />
-         
+
 // //           </>
 // //       </div>
 // //     </Toolbar>
@@ -60,7 +60,6 @@
 // //   onSubmitAllProduction: PropTypes.func.isRequired,
 // //   onSearch: PropTypes.func.isRequired, // Обязательный пропс для кнопки поиска
 // // };
-
 
 // import PropTypes from 'prop-types';
 // import React from 'react';
@@ -109,7 +108,6 @@
 //   onFilterName: PropTypes.func.isRequired,
 // };
 
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
@@ -117,6 +115,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import Button from '@mui/material/Button';
+import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 
 export default function UserTableGp({
   filterName,
@@ -132,7 +131,7 @@ export default function UserTableGp({
         p: (theme) => theme.spacing(0, 1, 0, 3),
       }}
     >
-      <div>
+      <div className='flex gap-2'>
         <OutlinedInput
           value={filterName}
           onChange={onFilterName}
@@ -146,11 +145,20 @@ export default function UserTableGp({
             </InputAdornment>
           }
         />
+        <Button
+          variant="contained"
+          color="inherit"
+          onClick={onExportExcel}
+          startIcon={<PiMicrosoftExcelLogo />}
+          sx={{ padding: '15px 26px' }}
+        >
+          Экспорт в Excel
+        </Button>
       </div>
-      
-      <Button variant="contained" onClick={onExportExcel}>
+
+      {/* <Button variant="contained" onClick={onExportExcel}>
         Export to Excel
-      </Button>
+      </Button> */}
     </Toolbar>
   );
 }

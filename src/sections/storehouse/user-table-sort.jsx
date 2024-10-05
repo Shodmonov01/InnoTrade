@@ -75,6 +75,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import Iconify from 'src/components/iconify';
 import { MenuItem, Select, Button, CircularProgress } from '@mui/material';
+import { PiMicrosoftExcelLogo } from 'react-icons/pi';
 
 export default function UserTableSort({
   filterName,
@@ -126,13 +127,22 @@ export default function UserTableSort({
       </div>
 
       <div>
-        <Button
+        {/* <Button
           variant="contained"
           onClick={onExcelExport}
           disabled={loading} // Disable while loading
-        >
+     7777777   >
           {loading ? <CircularProgress size={24} /> : 'Экспорт в Excel'}
-        </Button>
+        </Button> */}
+        <Button
+        variant="contained"
+        color="inherit"
+        onClick={onExcelExport}
+        startIcon={<PiMicrosoftExcelLogo />}
+        sx={{ padding: '15px 26px' }}
+      >
+        Экспорт в Excel
+      </Button>
       </div>
     </Toolbar>
   );

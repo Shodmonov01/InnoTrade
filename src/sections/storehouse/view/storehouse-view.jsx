@@ -370,11 +370,7 @@ const MainComponent = () => {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4">Склад</Typography>
-          <Stack direction="row" alignItems="center" className="gap-3">
-            <Button variant="contained" color="inherit" startIcon={<PiMicrosoftExcelLogo />}>
-              Экспорт в EXCEL
-            </Button>
-          </Stack>
+         
         </Stack>
         <Tabs value={activeTab} onChange={handleTabChange}>
           <Tab label="В производстве" />
