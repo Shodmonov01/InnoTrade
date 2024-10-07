@@ -157,14 +157,14 @@ export default function UserTableToolbar({
             <MenuItem value="az">От A до Z</MenuItem>
             <MenuItem value="za">От Z до A</MenuItem>
           </Select>
-          <Select value={service} onChange={handleServiceChange} displayEmpty sx={{ mb: 0, px: 5 }}>
+          {/* <Select value={service} onChange={handleServiceChange} displayEmpty sx={{ mb: 0, px: 5 }}>
             <MenuItem value="">
               <em>Все сервисы</em>
             </MenuItem>
             <MenuItem value="wildberries">Wildberries</MenuItem>
             <MenuItem value="ozon">Ozon</MenuItem>
             <MenuItem value="yandexmarket">YandexMarket</MenuItem>
-          </Select>
+          </Select> */}
           <Button
             variant="contained"
             color="primary"

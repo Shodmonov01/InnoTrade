@@ -62,8 +62,8 @@ export default function InventoryTableToolbar({
       const token = JSON.parse(localStorage.getItem('token')).access;
       const idCompany = localStorage.getItem('selectedCompany');
       
-      const response = await axiosInstance.post(`companies/${idCompany}/inventory/`, {
-        product_id: productID,
+      const response = await axiosInstance.post(`companies/${idCompany}/inventory-barcode/`, {
+        barcode: productID,
         shelf_name: shelfName,
         stock: stock,
       }, {
@@ -159,7 +159,7 @@ export default function InventoryTableToolbar({
           <TextField
             fullWidth
             margin="normal"
-            label="ID Продукта"
+            label="Barcode Продукта"
             value={productID}
             onChange={(e) => setProductID(e.target.value)}
           />
