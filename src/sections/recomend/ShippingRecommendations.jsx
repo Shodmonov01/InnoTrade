@@ -84,7 +84,8 @@ export default function ShippingRecommendations() {
       const queryParams = new URLSearchParams({
         page_size: rowsPerPage,
         page: page + 1,
-        region_name: regionFilter || '',
+        // region_name: regionFilter || '',
+        warehouse__region_name: regionFilter || '',
         service: serviceFilter || '',
         product_code: productCodeFilter || '',
         sort: sort || '',
@@ -101,7 +102,7 @@ export default function ShippingRecommendations() {
 
       const uniqueRegions = [
         ...new Set(
-          response.data.results.flatMap((row) => row.data.map((region) => region.region_name))
+          response.data.results.flatMap((row) => row.data.map((region) => region.warehouse__region_name))
         ),
       ];
       setRegions(uniqueRegions);
@@ -185,7 +186,7 @@ export default function ShippingRecommendations() {
       allData.forEach((row) => {
         const rowData = { product: row.product };
         regions.forEach((region) => {
-          const regionData = row.data.find((r) => r.region_name === region);
+          const regionData = row.data.find((r) => r.warehouse__region_name === region);
           rowData[`${region}-quantity`] = regionData ? regionData.quantity : 0;
           rowData[`${region}-days_left`] = regionData ? regionData.days_left : 0;
         });
@@ -428,11 +429,11 @@ export default function ShippingRecommendations() {
                   {row.product}
                 </TableCell>
                 {regions.map((region) => {
-                  const regionData = row.data.find((r) => r.region_name === region);
+                  const regionData = row.data.find((r) => r.warehouse__region_name === region);
                   return (
                     <>
                       <TableCell key={`${region}-quantity`} align="center">
-                        {regionData ? regionData.quantity : '0'}
+                        {regionData ? regionData.quantity : ' '}
                       </TableCell>
                       <TableCell key={`${region}-days_left`} align="center">
                         {regionData ? regionData.days_left : ' '}
