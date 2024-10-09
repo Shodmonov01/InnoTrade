@@ -30,50 +30,19 @@ export default function ShippingRecommendations() {
   const [regions, setRegions] = useState([]);
   const [services, setServices] = useState([]);
   const [regionFilter, setRegionFilter] = useState('');
-  const [serviceFilter, setServiceFilter] = useState('');
+  const [serviceFilter, setServiceFilter] = useState('wildberries');
   const [productCodeFilter, setProductCodeFilter] = useState('');
   const [sort, setSort] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false); // для общей отправки
   const [isLoading, setIsLoading] = useState(false);
 
+
   useEffect(() => {
     fetchData();
   }, [rowsPerPage, page, regionFilter, serviceFilter, productCodeFilter, sort]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const token = JSON.parse(localStorage.getItem('token')).access;
-  //       const idCompany = localStorage.getItem('selectedCompany');
 
-  //       const response = await axiosInstance.get(
-  //         `companies/${idCompany}/supplier/?page_size=${rowsPerPage}&page=${page + 1}`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-
-  //       setData(response.data.results || []);
-  //       setTotalProducts(response.data.product_count || 0);
-
-  //       // Получаем уникальный список филиалов для заголовков
-  //       const uniqueRegions = [
-  //         ...new Set(response.data.results.flatMap((row) => row.data.map((region) => region.region_name))),
-  //       ];
-  //       setRegions(uniqueRegions);
-
-  //       setLoading(false);
-  //       console.log(response.data);
-  //     } catch (err) {
-  //       console.error('Ошибка при получении данных:', err.message);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [rowsPerPage, page]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -84,9 +53,10 @@ export default function ShippingRecommendations() {
       const queryParams = new URLSearchParams({
         page_size: rowsPerPage,
         page: page + 1,
-        // region_name: regionFilter || '',
-        warehouse__region_name: regionFilter || '',
-        service: serviceFilter || '',
+        region_name: regionFilter || '',
+        // warehouse__region_name: regionFilter || '',
+        // service: serviceFilter || '',
+        service: serviceFilter || 'wildberries',
         product_code: productCodeFilter || '',
         sort: sort || '',
       }).toString();
@@ -326,20 +296,21 @@ export default function ShippingRecommendations() {
               </MenuItem>
             ))}
           </Select>
+          
           <Select
-            value={serviceFilter}
-            onChange={(e) => setServiceFilter(e.target.value)}
-            displayEmpty
-            inputProps={{ 'aria-label': 'Фильтр по сервису' }}
-            sx={{ mb: 0, px: 2 }}
-          >
-            <MenuItem value="">Все сервисы</MenuItem>
-            {services.map((service) => (
-              <MenuItem key={service} value={service}>
-                {service}
-              </MenuItem>
-            ))}
-          </Select>
+  value={serviceFilter}
+  onChange={(e) => setServiceFilter(e.target.value)}
+  displayEmpty
+  inputProps={{ 'aria-label': 'Фильтр по сервисам' }}
+  sx={{ mb: 0, px: 2 }}
+>
+  {services.map((service) => (
+    <MenuItem key={service} value={service}>
+      {service}
+    </MenuItem>
+  ))}
+</Select>
+
           <Select
             value={sort}
             onChange={handleSortChange}
