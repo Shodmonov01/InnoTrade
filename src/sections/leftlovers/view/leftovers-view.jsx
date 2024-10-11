@@ -129,7 +129,7 @@ export default function ProductsView() {
       const selectedTab = tabs.find((tab) => tab.label === currentTab);
       const serviceParam = selectedTab?.service ? `&service=${selectedTab.service}` : '';
 
-      let url = `/companies/${idCompany}/sales/?page_size=${totalProducts}${serviceParam}`;
+      let url = `/companies/${idCompany}/stocks/?page_size=${totalProducts}${serviceParam}`;
 
       if (startDate && endDate) {
         const formattedStartDate = format(new Date(startDate), 'yyyy-MM-dd');
