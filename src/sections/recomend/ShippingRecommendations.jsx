@@ -37,12 +37,9 @@ export default function ShippingRecommendations() {
   const [isSubmitting, setIsSubmitting] = useState(false); // для общей отправки
   const [isLoading, setIsLoading] = useState(false);
 
-
   useEffect(() => {
     fetchData();
-  }, [rowsPerPage, page, regionFilter, serviceFilter, productCodeFilter, sort]);
-
-
+  }, [rowsPerPage, page, regionFilter, serviceFilter, sort]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -57,7 +54,7 @@ export default function ShippingRecommendations() {
         // warehouse__region_name: regionFilter || '',
         // service: serviceFilter || '',
         service: serviceFilter || 'wildberries',
-        product_code: productCodeFilter || '',
+        article: productCodeFilter || '',
         sort: sort || '',
       }).toString();
 
@@ -72,7 +69,9 @@ export default function ShippingRecommendations() {
 
       const uniqueRegions = [
         ...new Set(
-          response.data.results.flatMap((row) => row.data.map((region) => region.warehouse__region_name))
+          response.data.results.flatMap((row) =>
+            row.data.map((region) => region.warehouse__region_name)
+          )
         ),
       ];
       setRegions(uniqueRegions);
@@ -85,6 +84,10 @@ export default function ShippingRecommendations() {
       console.error('Ошибка при получении данных:', err.message);
       setLoading(false);
     }
+  };
+
+  const handleSearch = () => {
+    fetchData(); // Вызов функции fetchData при нажатии на кнопку "Поиск"
   };
 
   const handleSubmitProduction = async (productId) => {
@@ -186,13 +189,13 @@ export default function ShippingRecommendations() {
     setIsSubmitting(true);
     try {
       // Здесь создаем массив промисов для отправки каждого продукта
-      const submitPromises = data.map((product) =>
-        handleSubmitProduction(product.id) // отправляем ID продукта
+      const submitPromises = data.map(
+        (product) => handleSubmitProduction(product.id) // отправляем ID продукта
       );
-  
+
       // Ожидаем завершения всех промисов
       await Promise.all(submitPromises);
-  
+
       console.log('Все данные успешно отправлены');
       // Вы можете показать уведомление об успешной отправке или обновить интерфейс
     } catch (error) {
@@ -201,7 +204,6 @@ export default function ShippingRecommendations() {
       setIsSubmitting(false);
     }
   };
-  
 
   const handleCalculateClick = async () => {
     setIsLoading(true);
@@ -233,16 +235,7 @@ export default function ShippingRecommendations() {
   return (
     <Paper>
       <div className="mx-3">
-        <div className="actions ">
-          {/* <Button
-            variant="contained"
-            color="inherit"
-            onClick={handleExportToExcel}
-            disabled={isExporting}
-            style={{ margin: '16px' }}
-          >
-            {isExporting ? <CircularProgress size={20} /> : 'Экспорт в Excel'}
-          </Button> */}
+        <div className="actions flex justify-start items-center gap-3">
           <Button
             variant="contained"
             color="inherit"
@@ -273,6 +266,13 @@ export default function ShippingRecommendations() {
 
           <Button
             variant="contained"
+            onClick={handleSearch} // Привязываем обработчик клика к кнопке
+          >
+            Поиск
+          </Button>
+
+          <Button
+            variant="contained"
             color="primary"
             onClick={handleCalculateClick}
             disabled={isLoading} // Отключаем кнопку во время загрузки
@@ -290,26 +290,28 @@ export default function ShippingRecommendations() {
             sx={{ mb: 0, px: 2 }}
           >
             <MenuItem value="">Все регионы</MenuItem>
-            {regions.map((region) => (
-              <MenuItem key={region} value={region}>
-                {region}
+            {regions
+              .sort((a, b) => a.localeCompare(b, 'ru'))
+              .map((region) => (
+                <MenuItem key={region} value={region}>
+                  {region}
+                </MenuItem>
+              ))}
+          </Select>
+
+          <Select
+            value={serviceFilter}
+            onChange={(e) => setServiceFilter(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': 'Фильтр по сервисам' }}
+            sx={{ mb: 0, px: 2 }}
+          >
+            {services.map((service) => (
+              <MenuItem key={service} value={service}>
+                {service}
               </MenuItem>
             ))}
           </Select>
-          
-          <Select
-  value={serviceFilter}
-  onChange={(e) => setServiceFilter(e.target.value)}
-  displayEmpty
-  inputProps={{ 'aria-label': 'Фильтр по сервисам' }}
-  sx={{ mb: 0, px: 2 }}
->
-  {services.map((service) => (
-    <MenuItem key={service} value={service}>
-      {service}
-    </MenuItem>
-  ))}
-</Select>
 
           <Select
             value={sort}
@@ -319,8 +321,8 @@ export default function ShippingRecommendations() {
             sx={{ mb: 0, px: 2 }}
           >
             <MenuItem value="">Без сортировки</MenuItem>
-            <MenuItem value="1">По возрастанию</MenuItem>
-            <MenuItem value="-1">По убыванию</MenuItem>
+            <MenuItem value="-1">По возрастанию</MenuItem>
+            <MenuItem value="1">По убыванию</MenuItem>
           </Select>
         </div>
       </div>

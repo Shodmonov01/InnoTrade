@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Toolbar,
   Typography,
@@ -27,8 +27,18 @@ export default function UserTableToolbar({
   handleCalculateClick,
   isLoading,
 }) {
+  const [localFilterName, setLocalFilterName] = useState('');
+
+  const handleFilterChange = (event) => {
+    setLocalFilterName(event.target.value);
+  };
+
+  const handleSearchClick = () => {
+    onFilterName({ target: { value: localFilterName } }); // Вызываем функцию поиска с локальным значением
+  };
+
   const handleSortChange = (event) => {
-    setSort(event.target.value); // Call setSort passed from parent
+    setSort(event.target.value);
   };
   return (
     <Toolbar className="my-5 flex justify-between">
@@ -45,8 +55,8 @@ export default function UserTableToolbar({
       </Button>
       
       <OutlinedInput
-        value={filterName}
-        onChange={onFilterName}
+        value={localFilterName}
+        onChange={handleFilterChange}
         placeholder="Поиск"
         startAdornment={
           <InputAdornment position="start" sx={{ mb: 0, px: 1 }}>
@@ -57,6 +67,16 @@ export default function UserTableToolbar({
           </InputAdornment>
         }
       />
+
+      {/* Кнопка для выполнения поиска */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSearchClick} // Обработчик клика по кнопке "Поиск"
+        sx={{ padding: '15px 26px', marginLeft: 1 }} // Добавим немного отступа
+      >
+        Поиск
+      </Button>
       <Select
         value={sort}
         onChange={handleSortChange} // Call the new function
