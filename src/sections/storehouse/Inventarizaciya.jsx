@@ -15,15 +15,16 @@
 // import InventoryTableToolbar from './InventoryTableToolbar';
 // import ExcelJS from 'exceljs';
 // import { saveAs } from 'file-saver';
-
+// import { CiEdit } from "react-icons/ci";
+// import { MdOutlineDone } from 'react-icons/md';
 
 // const Inventarizaciya = () => {
 //   const [data, setData] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
 //   const [newLocations, setNewLocations] = useState({});
-//   const [editing, setEditing] = useState(null); 
-//   const [newTotalFact, setNewTotalFact] = useState({}); 
+//   const [editing, setEditing] = useState(null);
+//   const [newTotalFact, setNewTotalFact] = useState({});
 
 //   useEffect(() => {
 //     const fetchData = async () => {
@@ -46,25 +47,27 @@
 //     fetchData();
 //   }, []);
 
-
+//   // Function to handle edit click
 //   const handleEditClick = (id, totalFact) => {
 //     setEditing(id); // Track which row is being edited
 //     setNewTotalFact((prev) => ({ ...prev, [id]: totalFact })); // Initialize new total_fact value for the row
 //   };
 
-//   const handleSaveClick = async (id) => {
+//   // Function to save the edited total_fact
+//   const handleSaveClick = async (id, productId) => {
 //     const token = JSON.parse(localStorage.getItem('token')).access;
 //     const idCompany = localStorage.getItem('selectedCompany');
 
 //     try {
-//       // Send PUT request to update total_fact value
+//       // Send PUT request to update total_fact value for the product
 //       await axiosInstance.put(`companies/${id}/inventory/`, {
-//         total_fact: newTotalFact[id],
+//         total_fact: newTotalFact[id], // Use product id from the row
 //       }, {
 //         headers: {
 //           Authorization: `Bearer ${token}`,
 //         },
 //       });
+
 //       // Update the data locally
 //       setData((prev) =>
 //         prev.map((item) =>
@@ -81,13 +84,6 @@
 //     setNewTotalFact((prev) => ({ ...prev, [id]: value }));
 //   };
 
-//   const handleNewLocationChange = (id, value) => {
-//     setNewLocations((prev) => ({ ...prev, [id]: value }));
-//   };
-
-//   console.log(data);
-  
-
 //   const groupDataByVendorCode = (data) => {
 //     const groupedData = {};
 
@@ -96,16 +92,16 @@
 //       if (!groupedData[vendorCode]) {
 //         groupedData[vendorCode] = {
 //           product: item.product,
-//           total: 0, // Total quantity initialization
-//           total_fact: item.total_fact, // Assuming this is not aggregated and taken directly
-//           shelfs: new Set(), // Use a Set for unique shelf names
+//           total: 0,
+//           total_fact: item.total_fact,
+//           shelfs: new Set(),
+//           id: item.id,
 //         };
 //       }
-//       groupedData[vendorCode].total += item.total; // Aggregate total quantities
-//       item.shelfs.forEach(shelf => groupedData[vendorCode].shelfs.add(shelf.shelf_name)); // Add unique shelf names
+//       groupedData[vendorCode].total += item.total;
+//       item.shelfs.forEach(shelf => groupedData[vendorCode].shelfs.add(shelf.shelf_name));
 //     });
 
-//     // Convert Set back to Array for rendering
 //     Object.values(groupedData).forEach(item => {
 //       item.shelfs = Array.from(item.shelfs);
 //     });
@@ -117,10 +113,8 @@
 //     const workbook = new ExcelJS.Workbook();
 //     const worksheet = workbook.addWorksheet('Inventory');
 
-//     // Add header row
 //     worksheet.addRow(['Код товара', 'Местоположение', 'Количество', 'Итого', 'Итого фактически']);
 
-//     // Add data rows
 //     groupedData.forEach(row => {
 //       worksheet.addRow([
 //         row.product.vendor_code,
@@ -131,7 +125,6 @@
 //       ]);
 //     });
 
-//     // Export the Excel file
 //     const buffer = await workbook.xlsx.writeBuffer();
 //     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 //     saveAs(blob, 'inventory.xlsx');
@@ -144,9 +137,7 @@
 
 //   return (
 //     <div>
-//       <InventoryTableToolbar 
-//        onExportExcel={handleExportExcel}
-//       />
+//       <InventoryTableToolbar onExportExcel={handleExportExcel} />
 //       <TableContainer component={Paper}>
 //         <Table>
 //           <TableHead>
@@ -164,33 +155,30 @@
 //                 <TableCell>{row.product.vendor_code}</TableCell>
 //                 <TableCell>
 //                   {row.shelfs.map((shelf, shelfIndex) => (
-//                     <Chip
-//                       key={shelfIndex}
-//                       label={shelf}
-//                       style={{ margin: '4px' }} // Add margin for aesthetics
-//                     />
+//                     <Chip key={shelfIndex} label={shelf} style={{ margin: '4px' }} />
 //                   ))}
 //                 </TableCell>
-//                 <TableCell>{row.total}</TableCell> {/* Total aggregated quantity */}
-//                 <TableCell>{row.total}</TableCell> {/* This could be adjusted if you have a specific logic */}
-//                 {/* <TableCell>{row.total_fact}</TableCell> */}
+//                 <TableCell>{row.total}</TableCell>
+//                 <TableCell>{row.total}</TableCell>
 //                 <TableCell>
 //                   {editing === row.id ? (
 //                     <>
 //                       <TextField
-//                         value={newTotalFact[row.id]}
+//                         value={newTotalFact[row.id] || ''}
 //                         onChange={(e) => handleNewTotalFactChange(row.id, e.target.value)}
 //                         size="small"
 //                       />
-//                       <IconButton onClick={() => handleSaveClick(row.id)}>
-//                         сох
+//                       <IconButton onClick={() => handleSaveClick(row.id, row.product.product_id)}>
+//                       <MdOutlineDone />
+
 //                       </IconButton>
 //                     </>
 //                   ) : (
 //                     <>
 //                       {row.total_fact}
 //                       <IconButton onClick={() => handleEditClick(row.id, row.total_fact)}>
-//                         мз
+//                       <CiEdit />
+
 //                       </IconButton>
 //                     </>
 //                   )}
@@ -206,7 +194,6 @@
 
 // export default Inventarizaciya;
 
-
 import React, { useEffect, useState } from 'react';
 import { axiosInstance } from 'src/api/api';
 import {
@@ -217,24 +204,23 @@ import {
   TableRow,
   TableContainer,
   Paper,
-  Chip,
   IconButton,
   TextField,
+  Tooltip,
+  Chip,
 } from '@mui/material';
 import InventoryTableToolbar from './InventoryTableToolbar';
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
-import { CiEdit } from "react-icons/ci";
+import { CiEdit } from 'react-icons/ci';
 import { MdOutlineDone } from 'react-icons/md';
-
 
 const Inventarizaciya = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [newLocations, setNewLocations] = useState({});
-  const [editing, setEditing] = useState(null); 
-  const [newTotalFact, setNewTotalFact] = useState({}); 
+  const [editing, setEditing] = useState(null);
+  const [newTotalFact, setNewTotalFact] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -257,34 +243,32 @@ const Inventarizaciya = () => {
     fetchData();
   }, []);
 
-  // Function to handle edit click
   const handleEditClick = (id, totalFact) => {
-    setEditing(id); // Track which row is being edited
-    setNewTotalFact((prev) => ({ ...prev, [id]: totalFact })); // Initialize new total_fact value for the row
+    setEditing(id);
+    setNewTotalFact((prev) => ({ ...prev, [id]: totalFact }));
   };
 
-  // Function to save the edited total_fact
-  const handleSaveClick = async (id, productId) => {
+  const handleSaveClick = async (id) => {
     const token = JSON.parse(localStorage.getItem('token')).access;
     const idCompany = localStorage.getItem('selectedCompany');
 
     try {
-      // Send PUT request to update total_fact value for the product
-      await axiosInstance.put(`companies/${id}/inventory/`, {
-        total_fact: newTotalFact[id], // Use product id from the row
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axiosInstance.put(
+        `companies/${id}/inventory/`,
+        {
+          total_fact: newTotalFact[id],
         },
-      });
-
-      // Update the data locally
-      setData((prev) =>
-        prev.map((item) =>
-          item.id === id ? { ...item, total_fact: newTotalFact[id] } : item
-        )
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      setEditing(null); // Exit edit mode
+
+      setData((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, total_fact: newTotalFact[id] } : item))
+      );
+      setEditing(null);
     } catch (error) {
       console.error('Failed to update total_fact:', error);
     }
@@ -297,23 +281,22 @@ const Inventarizaciya = () => {
   const groupDataByVendorCode = (data) => {
     const groupedData = {};
 
-    data.forEach(item => {
+    data.forEach((item) => {
       const vendorCode = item.product.vendor_code;
       if (!groupedData[vendorCode]) {
         groupedData[vendorCode] = {
           product: item.product,
-          total: 0,
           total_fact: item.total_fact,
-          shelfs: new Set(),
-          id: item.id,
+          shelfs: [],
         };
       }
-      groupedData[vendorCode].total += item.total;
-      item.shelfs.forEach(shelf => groupedData[vendorCode].shelfs.add(shelf.shelf_name));
-    });
-
-    Object.values(groupedData).forEach(item => {
-      item.shelfs = Array.from(item.shelfs);
+      item.shelfs.forEach((shelf) => {
+        groupedData[vendorCode].shelfs.push({
+          shelf_name: shelf.shelf_name,
+          stock: shelf.stock,
+          id: item.id,
+        });
+      });
     });
 
     return Object.values(groupedData);
@@ -323,20 +306,18 @@ const Inventarizaciya = () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Inventory');
 
-    worksheet.addRow(['Код товара', 'Местоположение', 'Количество', 'Итого', 'Итого фактически']);
+    worksheet.addRow(['Код товара', 'Местоположение', 'Количество', 'Итого фактически']);
 
-    groupedData.forEach(row => {
-      worksheet.addRow([
-        row.product.vendor_code,
-        row.shelfs.join(', '),
-        row.total,
-        row.total,
-        row.total_fact,
-      ]);
+    groupedData.forEach((row) => {
+      row.shelfs.forEach((shelf) => {
+        worksheet.addRow([row.product.vendor_code, shelf.shelf_name, shelf.stock, row.total_fact]);
+      });
     });
 
     const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
     saveAs(blob, 'inventory.xlsx');
   };
 
@@ -355,45 +336,54 @@ const Inventarizaciya = () => {
               <TableCell>Код товара</TableCell>
               <TableCell>Местоположение</TableCell>
               <TableCell>Количество</TableCell>
-              <TableCell>Итого</TableCell>
               <TableCell>Итого фактически</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {groupedData.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell>{row.product.vendor_code}</TableCell>
-                <TableCell>
-                  {row.shelfs.map((shelf, shelfIndex) => (
-                    <Chip key={shelfIndex} label={shelf} style={{ margin: '4px' }} />
-                  ))}
-                </TableCell>
-                <TableCell>{row.total}</TableCell>
-                <TableCell>{row.total}</TableCell>
-                <TableCell>
-                  {editing === row.id ? (
-                    <>
-                      <TextField
-                        value={newTotalFact[row.id] || ''}
-                        onChange={(e) => handleNewTotalFactChange(row.id, e.target.value)}
-                        size="small"
-                      />
-                      <IconButton onClick={() => handleSaveClick(row.id, row.product.product_id)}>
-                      <MdOutlineDone />
+              <React.Fragment key={index}>
+                <TableRow>
+                  <TableCell rowSpan={row.shelfs.length + 1}>{row.product.vendor_code}</TableCell>
+                </TableRow>
+                {row.shelfs.map((shelf, shelfIndex) => (
+                  <TableRow key={shelfIndex}>
+                    <TableCell>
+                      {/* {shelf.shelf_name} */}
 
-                      </IconButton>
-                    </>
-                  ) : (
-                    <>
-                      {row.total_fact}
-                      <IconButton onClick={() => handleEditClick(row.id, row.total_fact)}>
-                      <CiEdit />
-
-                      </IconButton>
-                    </>
-                  )}
-                </TableCell>
-              </TableRow>
+                      <Tooltip title={shelf.shelf_name} key={index}>
+                        <Chip
+                          label={shelf.shelf_name}
+                          variant="outlined"
+                          style={{ marginRight: 4, marginTop: 0 }}
+                        />
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>{shelf.stock}</TableCell>
+                    <TableCell>
+                      {editing === shelf.id ? (
+                        <>
+                          <TextField
+                            value={newTotalFact[shelf.id] || ''}
+                            onChange={(e) => handleNewTotalFactChange(shelf.id, e.target.value)}
+                            size="small"
+                          />
+                          <IconButton onClick={() => handleSaveClick(shelf.id)}>
+                            <MdOutlineDone />
+                          </IconButton>
+                        </>
+                      ) : (
+                        <>
+                          {/* {row.total_fact} */}
+                          {shelf.stock}
+                          <IconButton onClick={() => handleEditClick(shelf.id, row.total_fact)}>
+                            <CiEdit />
+                          </IconButton>
+                        </>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </React.Fragment>
             ))}
           </TableBody>
         </Table>

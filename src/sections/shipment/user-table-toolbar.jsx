@@ -153,7 +153,7 @@ export default function UserTableToolbar({
             <MenuItem value="">
               <em>Сортировать</em>
             </MenuItem>
-            <MenuItem value="sales">Больше продаж</MenuItem>
+            <MenuItem value="sales">Больше</MenuItem>
             <MenuItem value="az">От A до Z</MenuItem>
             <MenuItem value="za">От Z до A</MenuItem>
           </Select>

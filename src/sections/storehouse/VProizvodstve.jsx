@@ -94,31 +94,48 @@ const VProizvodstve = () => {
   };
 
   // Отправка изменения одного продукта
-  const handleSubmitProduced = async (id) => {
-    try {
-      const token = JSON.parse(localStorage.getItem('token')).access;
-      const productionValue =
-        productionValues[id] !== ''
-          ? productionValues[id]
-          : data.find((row) => row.id === id)?.manufacture;
+// Отправка изменения одного продукта
+const handleSubmitProduced = async (id) => {
+  try {
+    const token = JSON.parse(localStorage.getItem('token')).access;
+    const productionValue =
+      productionValues[id] !== ''
+        ? Number(productionValues[id])
+        : data.find((row) => row.id === id)?.manufacture;
 
-      await axiosInstance.patch(
-        `companies/${id}/update-prodcution/`,
-        {
-          produced: Number(productionValue),
+    await axiosInstance.patch(
+      `companies/${id}/update-prodcution/`,
+      {
+        produced: productionValue,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      }
+    );
 
-      console.log('Успешно обновлено количество для производства:', id);
-    } catch (error) {
-      console.error('Ошибка при обновлении количества для производства:', error);
-    }
-  };
+    console.log('Успешно обновлено количество для производства:', id);
+
+    // Обновляем локальное состояние data
+    const updatedData = data.map((row) => 
+      row.id === id
+        ? { ...row, manufacture: row.manufacture - productionValue, produced: 0 }
+        : row
+    );
+
+    setData(updatedData);
+
+    // Очищаем значение ввода
+    setProductionValues({
+      ...productionValues,
+      [id]: '', // Очищаем поле ввода после обновления
+    });
+  } catch (error) {
+    console.error('Ошибка при обновлении количества для производства:', error);
+  }
+};
+
 
   const handleSubmitAllProduction = async () => {
     try {
@@ -213,7 +230,6 @@ const VProizvodstve = () => {
 
   return (
     <div>
-      
       <UserTableVP
         filterName={filterName}
         onFilterName={handleSearch}

@@ -119,8 +119,8 @@ export default function UserTableSort({
           sx={{ mb: 0, px: 6 }}
         >
           <MenuItem value="">Без сортировки</MenuItem>
-          <MenuItem value="1">Больше продаж</MenuItem>
-          <MenuItem value="-1">Меньше продаж</MenuItem>
+          <MenuItem value="1">Больше </MenuItem>
+          <MenuItem value="-1">Меньше </MenuItem>
           <MenuItem value="A-Z">От A до Z</MenuItem>
           <MenuItem value="Z-A">От Z до A</MenuItem>
         </Select>

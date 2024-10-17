@@ -20,6 +20,7 @@
 
 import axios from 'axios';
 
+// export const BASE_URL = 'http://51.250.22.154:8000';
 export const BASE_URL = 'http://51.250.22.154:8000';
 
 const axiosAccountInstance = axios.create({

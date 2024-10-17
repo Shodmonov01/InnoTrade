@@ -321,8 +321,8 @@ export default function ShippingRecommendations() {
             sx={{ mb: 0, px: 2 }}
           >
             <MenuItem value="">Без сортировки</MenuItem>
-            <MenuItem value="-1">По возрастанию</MenuItem>
-            <MenuItem value="1">По убыванию</MenuItem>
+            <MenuItem value="1">По возрастанию</MenuItem>
+            <MenuItem value="-1">По убыванию</MenuItem>
           </Select>
         </div>
       </div>
