@@ -50,8 +50,8 @@ export default function ShippingRecommendations() {
       const queryParams = new URLSearchParams({
         page_size: rowsPerPage,
         page: page + 1,
-        region_name: regionFilter || '',
-        // warehouse__region_name: regionFilter || '',
+        warehouse__oblast_okrug_name: regionFilter || '',
+        // warehouse__oblast_okrug_name: regionFilter || '',
         // service: serviceFilter || '',
         service: serviceFilter || 'wildberries',
         article: productCodeFilter || '',
@@ -70,7 +70,7 @@ export default function ShippingRecommendations() {
       const uniqueRegions = [
         ...new Set(
           response.data.results.flatMap((row) =>
-            row.data.map((region) => region.warehouse__region_name)
+            row.data.map((region) => region.warehouse__oblast_okrug_name)
           )
         ),
       ];
@@ -159,7 +159,7 @@ export default function ShippingRecommendations() {
       allData.forEach((row) => {
         const rowData = { product: row.product };
         regions.forEach((region) => {
-          const regionData = row.data.find((r) => r.warehouse__region_name === region);
+          const regionData = row.data.find((r) => r.warehouse__oblast_okrug_name === region);
           rowData[`${region}-quantity`] = regionData ? regionData.quantity : 0;
           rowData[`${region}-days_left`] = regionData ? regionData.days_left : 0;
         });
@@ -226,6 +226,49 @@ export default function ShippingRecommendations() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Текущие заказы');
+
+    worksheet.columns = [
+      { header: 'ID заказа', key: 'id', width: 10 },
+      { header: 'Название заказа', key: 'name', width: 30 },
+      { header: 'Юр. лицо', key: 'owner', width: 25 },
+      { header: 'Класс пользователя', key: 'user_class', width: 20 },
+      { header: 'Адрес', key: 'address', width: 30 },
+      { header: 'Телефон', key: 'phone', width: 15 },
+      { header: 'Email', key: 'email', width: 25 },
+      { header: 'Дата создания', key: 'create_at', width: 20 },
+      { header: 'Дата доставки', key: 'date_delivery', width: 20 },
+      { header: 'Сумма', key: 'price', width: 15 },
+      { header: 'Общий вес', key: 'total_weight', width: 15 },
+      { header: 'Статус', key: 'status', width: 15 },
+      { header: 'Оплата', key: 'payment', width: 15 },
+    ];
+
+    orders.forEach((order) => {
+      worksheet.addRow({
+        id: order.id,
+        name: order.name,
+        owner: order.owner?.name_organizatsiya || 'Не указано',
+        user_class: order.owner?.user_class?.name || 'Не указано',
+        address: order.owner?.adress_delivery || 'Не указан',
+        phone: order.owner?.phone || 'Не указан',
+        email: order.owner?.email || '—',
+        create_at: format(new Date(order.create_at), 'dd/MM/yyyy HH:mm:ss'),
+        date_delivery: order.date_delivery,
+        price: order.price,
+        total_weight: order.total_weight,
+        status: order.status?.name || 'Не указан',
+        payment: order.payment || 'Не указано',
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/octet-stream' });
+    saveAs(blob, 'Текущие_заказы.xlsx');
   };
 
   if (loading) {
@@ -402,7 +445,9 @@ export default function ShippingRecommendations() {
                   {row.product}
                 </TableCell>
                 {regions.map((region) => {
-                  const regionData = row.data.find((r) => r.warehouse__region_name === region);
+                  const regionData = row.data.find(
+                    (r) => r.warehouse__oblast_okrug_name === region
+                  );
                   return (
                     <>
                       <TableCell key={`${region}-quantity`} align="center">
